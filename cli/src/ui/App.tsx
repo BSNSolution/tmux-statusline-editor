@@ -5,6 +5,10 @@ import {
   CATALOG,
   segmentsToString,
   newId,
+  t,
+  categoryLabel,
+  itemLabel,
+  itemDescription,
   type Segment,
   type StatusModel,
   type CatalogItem,
@@ -40,20 +44,21 @@ function colorWord(c?: string): string { if (!c) return ""; return COLOR_NAMES[c
 function hex(c?: string): string | undefined { return c && c.startsWith("#") ? c : (c && !/^colou?r/.test(c) ? c : undefined); }
 function colorWords(s: { style: TmuxStyle }): string {
   const p: string[] = [];
-  if (s.style.bg) p.push(`fundo ${colorWord(s.style.bg)}`);
-  if (s.style.fg) p.push(`texto ${colorWord(s.style.fg)}`);
-  if (s.style.bold) p.push("negrito");
+  if (s.style.bg) p.push(t("cw.bg", { c: colorWord(s.style.bg) }));
+  if (s.style.fg) p.push(t("cw.fg", { c: colorWord(s.style.fg) }));
+  if (s.style.bold) p.push(t("cw.bold"));
   return p.join(" · ");
 }
 
 type Tab = "editor" | "historico" | "temas";
 type Mode = "nav" | "add" | "edit" | "options";
 type Zone = "left" | "right" | "windowFormat" | "windowCurrentFormat";
-const ZONES: { key: Zone; label: string }[] = [
-  { key: "left", label: "status-left" },
-  { key: "windowFormat", label: "abas (outras)" },
-  { key: "windowCurrentFormat", label: "aba atual" },
-  { key: "right", label: "status-right" },
+// label resolvido em tempo de render via t("zone.<key>")
+const ZONES: { key: Zone }[] = [
+  { key: "left" },
+  { key: "windowFormat" },
+  { key: "windowCurrentFormat" },
+  { key: "right" },
 ];
 
 export function App(): React.ReactElement {
@@ -75,10 +80,10 @@ export function App(): React.ReactElement {
   useEffect(() => {
     (async () => {
       if (await tmuxServerRunning()) {
-        try { setModel(await importFromServer()); setStatus("Importado do tmux ao vivo."); return; } catch { /* fallthrough */ }
+        try { setModel(await importFromServer()); setStatus(t("st.imported")); return; } catch { /* fallthrough */ }
       }
       setModel(defaultModel());
-      setStatus("Sem servidor tmux — carregado padrão.");
+      setStatus(t("st.noServer"));
     })();
     // detecta plugin de tema que rouba a statusline (tokyo-night etc.)
     setThemeConflict(detectThemeConflict().present);
@@ -115,7 +120,7 @@ export function App(): React.ReactElement {
         };
         const next = [...segs]; next.splice(segIdx + 1, 0, seg);
         updateZone(next); setSegIdx(segIdx + 1); setMode("nav");
-        setStatus(`Adicionado: ${item.label}`);
+        setStatus(t("st.added", { name: itemLabel(item) }));
         return;
       }
       // digitação = busca
@@ -128,7 +133,7 @@ export function App(): React.ReactElement {
 
     // modo navegação
     if (input === "q") { exit(); return; }
-    if (key.tab) { setTab((t) => (t === "editor" ? "historico" : t === "historico" ? "temas" : "editor")); return; }
+    if (key.tab) { setTab((cur) => (cur === "editor" ? "historico" : cur === "historico" ? "temas" : "editor")); return; }
     if (input === "h") { setTab("historico"); return; }
     if (input === "t") { setTab("temas"); return; }
     // "e" fora do editor volta pro editor; dentro do editor, edita o segmento (tratado abaixo)
@@ -150,28 +155,28 @@ export function App(): React.ReactElement {
     if (input === "e") { if (segs[segIdx]) setMode("edit"); return; }  // editar segmento atual
     if (input === "g") { setMode("options"); return; }                 // editar opções gerais (fundo geral etc.)
     if (input === "c") {                                               // copiar cores/estilo do segmento atual
-      if (segs[segIdx]) { setCopiedStyle({ ...segs[segIdx]!.style }); setStatus("Cores copiadas — vá noutro item e tecle 'v' para colar (V cola na aba inteira)."); }
+      if (segs[segIdx]) { setCopiedStyle({ ...segs[segIdx]!.style }); setStatus(t("st.copied")); }
       return;
     }
     if (input === "v" && copiedStyle) {                                // colar no segmento atual
       const arr = [...segs]; arr[segIdx] = { ...arr[segIdx]!, style: { ...copiedStyle } };
-      updateZone(arr); setStatus("Cores coladas neste item (Enter aplica no tmux).");
+      updateZone(arr); setStatus(t("st.pasted"));
       return;
     }
     if (input === "V" && copiedStyle) {                                // colar na zona/aba inteira
       updateZone(segs.map((s) => ({ ...s, style: { ...copiedStyle } })));
-      setStatus("Cores coladas na aba/zona inteira (Enter aplica no tmux).");
+      setStatus(t("st.pastedZone"));
       return;
     }
     if (input === "l") {                                              // l = limpar/resetar cores da zona atual
       updateZone(segs.map((s) => ({ ...s, style: {} })));             // remove todos os fg/bg/attrs
-      setStatus("Cores da zona limpas (fundo/texto padrão). Enter aplica no tmux.");
+      setStatus(t("st.cleared"));
       return;
     }
     if (input === "x" && themeConflict) {                              // desativar plugin de tema conflitante
       const n = disableConflictingTheme();
       setThemeConflict(false);
-      setStatus(n > 0 ? `Tema conflitante desativado (${n} linha(s) comentadas). Agora aplique (Enter) — suas edições vão pegar.` : "Nenhuma linha de tema encontrada.");
+      setStatus(n > 0 ? t("st.themeOff", { n }) : t("st.themeNone"));
       return;
     }
     if (key.return) { void doApply(); return; }
@@ -180,33 +185,33 @@ export function App(): React.ReactElement {
   function saveEditedSegment(next: Segment) {
     const arr = [...segs]; arr[segIdx] = next;
     updateZone(arr); setMode("nav");
-    setStatus("Segmento editado (Enter aplica no tmux).");
+    setStatus(t("st.segEdited"));
   }
   function applyStyleToZone(style: import("@tse/shared").TmuxStyle) {
     // aplica fg/bg/atributos a TODOS os segmentos da zona (mantém o conteúdo de cada um)
     const arr = segs.map((s) => ({ ...s, style: { ...style } }));
     updateZone(arr); setMode("nav");
-    setStatus("Estilo aplicado à zona inteira (Enter aplica no tmux).");
+    setStatus(t("st.zoneStyle"));
   }
   function saveOptions(next: StatusModel["options"]) {
     if (!model) return;
     setModel({ ...model, options: next }); setMode("nav");
-    setStatus("Opções gerais editadas (Enter aplica no tmux).");
+    setStatus(t("st.optsEdited"));
   }
 
   function moveSeg(dir: number) {
     const j = segIdx + dir;
-    if (j < 0 || j >= segs.length) { setStatus(dir < 0 ? "Já é o primeiro item." : "Já é o último item."); return; }
+    if (j < 0 || j >= segs.length) { setStatus(dir < 0 ? t("st.moved.first") : t("st.moved.last")); return; }
     const next = [...segs];
     const tmp = next[segIdx]!; next[segIdx] = next[j]!; next[j] = tmp;
     updateZone(next); setSegIdx(j);
-    setStatus(`Item movido ${dir < 0 ? "◀ para trás" : "para frente ▶"} (Enter aplica no tmux).`);
+    setStatus(dir < 0 ? t("st.moved.back") : t("st.moved.fwd"));
   }
   function removeSeg() {
     if (segs.length === 0) return;
     const next = segs.filter((_, i) => i !== segIdx);
     updateZone(next); setSegIdx(Math.max(0, segIdx - 1));
-    setStatus("Segmento removido.");
+    setStatus(t("st.removed"));
   }
   function duplicateSeg() {
     const cur = segs[segIdx];
@@ -214,7 +219,7 @@ export function App(): React.ReactElement {
     const copy: Segment = { ...cur, id: newId(), style: { ...cur.style } };
     const next = [...segs]; next.splice(segIdx + 1, 0, copy);
     updateZone(next); setSegIdx(segIdx + 1);
-    setStatus(`Item duplicado: ${humanName(cur)} (Enter aplica no tmux).`);
+    setStatus(t("st.duplicated", { name: humanName(cur) }));
   }
   async function doApply() {
     if (!model) return;
@@ -226,23 +231,23 @@ export function App(): React.ReactElement {
     if (usesSeconds && m.options.interval > 1) {
       m = { ...m, options: { ...m.options, interval: 1 } };
       setModel(m);
-      secNote = " (ajustei o refresh p/ 1s por causa dos segundos)";
+      secNote = t("st.secondsNote");
     }
     saveVersion(m, `edição ${new Date().toLocaleTimeString("pt-BR")}`);
     const r = await applyModel(m);
-    setStatus((r.sourced ? "✓ Aplicado no tmux ao vivo (+ versão salva)." : "✓ Escrito no ~/.tmux.conf (+ versão salva). Sem servidor p/ recarregar.") + secNote);
+    setStatus((r.sourced ? t("st.applied.live") : t("st.applied.file")) + secNote);
   }
 
-  if (!model) return <Text>Carregando…</Text>;
+  if (!model) return <Text>{t("loading")}</Text>;
 
   return (
     <Box flexDirection="column" width="100%">
       <Header tab={tab} />
       {themeConflict && (
         <Box borderStyle="round" borderColor="#fbbf24" paddingX={1}>
-          <Text color="#fbbf24">⚠ Um tema (ex.: tokyo-night) controla sua statusline e sobrepõe as edições. </Text>
-          <Text bold color="#fbbf24">Tecle "x" para o editor assumir o controle</Text>
-          <Text color="#fbbf24"> (revertível, com backup).</Text>
+          <Text color="#fbbf24">{t("conflict.msg")}</Text>
+          <Text bold color="#fbbf24">{t("conflict.action")}</Text>
+          <Text color="#fbbf24">{t("conflict.tail")}</Text>
         </Box>
       )}
       {tab === "editor" && mode === "edit" && segs[segIdx] && (
@@ -262,12 +267,17 @@ export function App(): React.ReactElement {
 }
 
 function Header({ tab }: { tab: Tab }) {
+  const tabLabel: Record<Tab, string> = {
+    editor: t("tab.editor"),
+    historico: t("tab.history"),
+    temas: t("tab.themes"),
+  };
   return (
     <Box borderStyle="round" borderColor="#7C5CFF" paddingX={1} justifyContent="space-between">
-      <Text bold color="#7C5CFF">tmux statusline editor</Text>
+      <Text bold color="#7C5CFF">{t("app.title")}</Text>
       <Text>
-        {(["editor", "historico", "temas"] as Tab[]).map((t) => (
-          <Text key={t} color={t === tab ? "#a48bff" : "gray"} bold={t === tab}> {t} </Text>
+        {(["editor", "historico", "temas"] as Tab[]).map((tb) => (
+          <Text key={tb} color={tb === tab ? "#a48bff" : "gray"} bold={tb === tab}> {tabLabel[tb]} </Text>
         ))}
       </Text>
     </Box>
@@ -283,15 +293,15 @@ function EditorView({ model, zone, segs, segIdx, mode, addIdx, addQuery }: {
       <RealPreview model={model} />
 
       <Box>
-        <Text dimColor>parte da barra: </Text>
+        <Text dimColor>{t("barPart")}</Text>
         {ZONES.map((z) => (
-          <Text key={z.key} bold={z.key === zone} color={z.key === zone ? "#a48bff" : "gray"}> {z.key === zone ? "▸" : " "}{z.label} </Text>
+          <Text key={z.key} bold={z.key === zone} color={z.key === zone ? "#a48bff" : "gray"}> {z.key === zone ? "▸" : " "}{t(`zone.${z.key}`)} </Text>
         ))}
       </Box>
 
       {/* lista de segmentos da zona atual — linguagem humana + valor + amostra de cor */}
       <Box flexDirection="column" borderStyle="single" borderColor="#2A2C33" paddingX={1}>
-        {segs.length === 0 && <Text dimColor>(vazio — tecle "a" para adicionar um item)</Text>}
+        {segs.length === 0 && <Text dimColor>{t("list.empty")}</Text>}
         {segs.map((s, i) => {
           const sel = i === segIdx;
           return (
@@ -314,22 +324,22 @@ function EditorView({ model, zone, segs, segIdx, mode, addIdx, addQuery }: {
         const cur = Math.min(addIdx, Math.max(0, filtered.length - 1));
         return (
           <Box flexDirection="column" borderStyle="round" borderColor="#7C5CFF" paddingX={1}>
-            <Text bold color="#7C5CFF">O que você quer mostrar aqui?  (digite p/ buscar · ↑/↓ escolhe · Enter adiciona · Esc cancela)</Text>
+            <Text bold color="#7C5CFF">{t("add.title")}</Text>
             <Box>
-              <Text color="#fbbf24">buscar: </Text>
-              <Text>{addQuery || <Text dimColor>(digite… ex.: "git", "bateria", "hora", "claude", "ícone")</Text>}</Text>
-              {addQuery ? <Text dimColor>{"   "}{filtered.length} resultado(s) · Esc limpa</Text> : null}
+              <Text color="#fbbf24">{t("pick.search")}</Text>
+              <Text>{addQuery || <Text dimColor>{t("pick.searchHint")}</Text>}</Text>
+              {addQuery ? <Text dimColor>{"   "}{t("pick.results", { n: filtered.length })}</Text> : null}
             </Box>
-            {filtered.length === 0 && <Text color="#ef4444">Nada encontrado para "{addQuery}". Apague p/ ver tudo.</Text>}
+            {filtered.length === 0 && <Text color="#ef4444">{t("pick.none", { q: addQuery })}</Text>}
             {windowAround(filtered, cur, 8).map(({ item, idx }) => (
               <Text key={item.key} color={idx === cur ? "#7C5CFF" : undefined} underline={idx === cur}>
                 {idx === cur ? "› " : "  "}
-                <Text bold>{item.label}</Text>
-                {item.example ? <Text color="#5fb8c8">  → mostra "{item.example}"</Text> : null}
-                <Text dimColor>   ({item.category})</Text>
+                <Text bold>{itemLabel(item)}</Text>
+                {item.example ? <Text color="#5fb8c8">{t("add.shows", { ex: item.example })}</Text> : null}
+                <Text dimColor>   ({categoryLabel(item.category)})</Text>
               </Text>
             ))}
-            <Text dimColor>{"  "}{filtered[cur]?.description ?? ""}</Text>
+            <Text dimColor>{"  "}{filtered[cur] ? itemDescription(filtered[cur]!) : ""}</Text>
           </Box>
         );
       })()}
@@ -341,14 +351,14 @@ function HistoryView() {
   const versions = listVersions();
   return (
     <Box flexDirection="column" borderStyle="single" borderColor="#2A2C33" paddingX={1}>
-      <Text bold color="#a48bff">Histórico de versões</Text>
-      {versions.length === 0 && <Text dimColor>(nenhuma versão salva ainda — aplique uma edição)</Text>}
+      <Text bold color="#a48bff">{t("history.title")}</Text>
+      {versions.length === 0 && <Text dimColor>{t("history.empty")}</Text>}
       {versions.slice(0, 15).map((v) => (
         <Text key={v.id}>
           <Text color="#7aa2f7">{v.id}</Text>  {v.pinned ? "📌" : "  "} <Text>{truncate(v.label, 40)}</Text>
         </Text>
       ))}
-      <Text dimColor>{versions.length} versão(ões). (restaurar/pin vem no próximo passo)</Text>
+      <Text dimColor>{t("history.count", { n: versions.length })}</Text>
     </Box>
   );
 }
@@ -356,20 +366,20 @@ function HistoryView() {
 function ThemesView() {
   return (
     <Box flexDirection="column" borderStyle="single" borderColor="#2A2C33" paddingX={1}>
-      <Text bold color="#a48bff">Temas</Text>
-      <Text dimColor>(galeria de temas — em construção)</Text>
+      <Text bold color="#a48bff">{t("themes.title")}</Text>
+      <Text dimColor>{t("themes.wip")}</Text>
     </Box>
   );
 }
 
 function Footer({ status, tab, mode }: { status: string; tab: Tab; mode: Mode }) {
   const help = mode === "add"
-    ? "digite p/ buscar · ↑/↓ escolher · Enter adicionar · Esc limpa/cancela"
+    ? t("help.add")
     : mode === "edit" || mode === "options"
-      ? "↑/↓ campo · ←/→ valor · Enter salva · Esc cancela"
+      ? t("help.edit")
       : tab === "editor"
-        ? "←/→ parte · ↑/↓ item · , / . mover · a adicionar · d duplicar · r remover · e editar · c/v/V copiar/colar cor · l limpar cores · g fundo geral · Enter aplicar · q sair"
-        : "Tab volta ao editor · q sai";
+        ? t("help.nav")
+        : t("help.other");
   return (
     <Box flexDirection="column" paddingX={1}>
       {status ? <Text color="#5fb8c8">{status}</Text> : null}

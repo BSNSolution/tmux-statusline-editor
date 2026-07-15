@@ -6,6 +6,7 @@ import { Box, Text, useInput } from "ink";
 import TextInput from "ink-text-input";
 import {
   catalogByInsert, catalogGrouped, catalogByKey,
+  t, categoryLabel, itemLabel, itemDescription,
   type Segment, type TmuxStyle, type CatalogItem,
 } from "@tse/shared";
 
@@ -78,8 +79,8 @@ function inferKind(content: string, fallback: Segment["kind"]): Segment["kind"] 
 function humanizeContent(content: string, catalogKey?: string): { name: string; example: string } {
   const byKey = catalogKey ? catalogByKey(catalogKey) : undefined;
   const item = byKey ?? catalogByInsert(content);
-  if (item) return { name: item.label, example: item.example ?? "" };
-  return { name: `Texto personalizado`, example: content.trim() || "(vazio)" };
+  if (item) return { name: itemLabel(item), example: item.example ?? "" };
+  return { name: t("seg.custom"), example: content.trim() || t("seg.empty") };
 }
 
 export function EditSegment({ seg, onSave, onCancel, onApplyToZone }: {
@@ -189,29 +190,29 @@ export function EditSegment({ seg, onSave, onCancel, onApplyToZone }: {
     const visible = rows.slice(start, start + WINDOW);
     return (
       <Box flexDirection="column" borderStyle="round" borderColor="#7C5CFF" paddingX={1}>
-        <Text bold color="#7C5CFF">Escolher o que mostrar — digite p/ buscar · ↑/↓ navega · Enter escolhe · Esc volta</Text>
+        <Text bold color="#7C5CFF">{t("pick.title")}</Text>
         {/* linha de busca */}
         <Box>
-          <Text color="#fbbf24">buscar: </Text>
-          <Text>{query || <Text dimColor>(digite… ex.: "git", "bateria", "hora", "ícone")</Text>}</Text>
-          {query ? <Text dimColor>{"   "}{selectable.length} resultado(s) · Esc limpa</Text> : null}
+          <Text color="#fbbf24">{t("pick.search")}</Text>
+          <Text>{query || <Text dimColor>{t("pick.searchHint")}</Text>}</Text>
+          {query ? <Text dimColor>{"   "}{t("pick.results", { n: selectable.length })}</Text> : null}
         </Box>
-        {!hasResults && <Text color="#ef4444">Nada encontrado para "{query}". Apague p/ ver tudo.</Text>}
+        {!hasResults && <Text color="#ef4444">{t("pick.none", { q: query })}</Text>}
         {visible.map((r, i) => {
           const absIdx = start + i;
-          if (r.header) return <Text key={`h${absIdx}`} color="#9b988f" bold>{`── ${r.header} ──`}</Text>;
+          if (r.header) return <Text key={`h${absIdx}`} color="#9b988f" bold>{`── ${categoryLabel(r.header)} ──`}</Text>;
           const sel = absIdx === curSel;
           if (r.row!.type === "custom") {
             return (
               <Text key={`r${absIdx}`} color={sel ? "#7C5CFF" : undefined} underline={sel}>
-                {sel ? "› " : "  "}✏️  Texto personalizado…  <Text dimColor>(digite o que quiser)</Text>
+                {sel ? "› " : "  "}{t("pick.custom")}  <Text dimColor>{t("pick.customHint")}</Text>
               </Text>
             );
           }
           const it = r.row!.item;
           return (
             <Box key={`r${absIdx}`}>
-              <Text color={sel ? "#7C5CFF" : undefined} underline={sel}>{sel ? "› " : "  "}{it.label}</Text>
+              <Text color={sel ? "#7C5CFF" : undefined} underline={sel}>{sel ? "› " : "  "}{itemLabel(it)}</Text>
               {it.example ? <Text color="#5fb8c8">{"  ("}{it.example}{")"}</Text> : null}
             </Box>
           );
@@ -219,7 +220,7 @@ export function EditSegment({ seg, onSave, onCancel, onApplyToZone }: {
         {(() => {
           if (curSel < 0) return null;
           const r = rows[curSel]!.row!;
-          const desc = r.type === "item" ? r.item.description : "Texto/valor fixo que você digita.";
+          const desc = r.type === "item" ? itemDescription(r.item) : t("pick.customDesc");
           return <Text dimColor>{"› "}{desc}</Text>;
         })()}
       </Box>
@@ -230,28 +231,28 @@ export function EditSegment({ seg, onSave, onCancel, onApplyToZone }: {
   const human = humanizeContent(content, catalogKey);
   return (
     <Box flexDirection="column" borderStyle="round" borderColor="#7C5CFF" paddingX={1}>
-      <Text bold color="#7C5CFF">Editar segmento — ↑/↓ campo · ←/→ valor · Enter salva · Esc cancela</Text>
-      {onApplyToZone ? <Text color="#fbbf24">dica: tecle "A" (shift+a) p/ aplicar esta cor/estilo à ABA/zona INTEIRA (evita o visual picotado)</Text> : null}
+      <Text bold color="#7C5CFF">{t("seg.title")}</Text>
+      {onApplyToZone ? <Text color="#fbbf24">{t("seg.applyHint")}</Text> : null}
 
       {/* preview do segmento com o estilo atual (usa o valor-exemplo, não o código cru) */}
       <Box>
-        <Text dimColor>preview: </Text>
+        <Text dimColor>{t("seg.preview")}</Text>
         <Text color={style.fg} backgroundColor={style.bg} bold={style.bold}
               underline={style.underscore} inverse={style.reverse} italic={style.italics}>
-          {human.example || content || "(vazio)"}
+          {human.example || content || t("seg.empty")}
         </Text>
       </Box>
 
       {/* campo: conteúdo — agora mostra o NOME HUMANO + exemplo, e abre o seletor */}
       <Box>
-        <Text color={field === "content" ? "#7C5CFF" : undefined}>{field === "content" ? "› " : "  "}Mostra: </Text>
+        <Text color={field === "content" ? "#7C5CFF" : undefined}>{field === "content" ? "› " : "  "}{t("seg.shows")}</Text>
         {editingText
           ? <TextInput value={content} onChange={setContent} onSubmit={() => setEditingText(false)} />
           : (
             <Box>
               <Text color="#5fb8c8">{human.name}</Text>
               {human.example ? <Text dimColor>{"  (ex.: "}{human.example}{")"}</Text> : null}
-              {field === "content" ? <Text color="#fbbf24">{"   → trocar"}</Text> : null}
+              {field === "content" ? <Text color="#fbbf24">{t("seg.change")}</Text> : null}
             </Box>
           )}
       </Box>
@@ -259,11 +260,11 @@ export function EditSegment({ seg, onSave, onCancel, onApplyToZone }: {
       {/* fg / bg */}
       {(["fg", "bg"] as const).map((f) => (
         <Box key={f}>
-          <Text color={field === f ? "#7C5CFF" : undefined}>{field === f ? "› " : "  "}{f === "fg" ? "Cor texto (fg): " : "Cor fundo (bg): "}</Text>
+          <Text color={field === f ? "#7C5CFF" : undefined}>{field === f ? "› " : "  "}{f === "fg" ? t("seg.fg") : t("seg.bg")}</Text>
           <Text color={style[f]} backgroundColor={f === "bg" ? style[f] : undefined}>
             {"  "}{SWATCHES[swatchIndex(style[f])]!.name}{"  "}
           </Text>
-          <Text dimColor>{style[f] ?? "nenhum"}</Text>
+          <Text dimColor>{style[f] ?? t("seg.none")}</Text>
         </Box>
       ))}
 
@@ -271,7 +272,7 @@ export function EditSegment({ seg, onSave, onCancel, onApplyToZone }: {
       {(["bold", "dim", "underscore", "reverse", "italics"] as const).map((f) => (
         <Box key={f}>
           <Text color={field === f ? "#7C5CFF" : undefined}>{field === f ? "› " : "  "}{padLabel(f)}: </Text>
-          <Text color={style[f] ? "#4ade80" : "gray"}>{style[f] ? "● ligado" : "○ desligado"}</Text>
+          <Text color={style[f] ? "#4ade80" : "gray"}>{style[f] ? t("attr.on") : t("attr.off")}</Text>
         </Box>
       ))}
     </Box>
@@ -279,6 +280,9 @@ export function EditSegment({ seg, onSave, onCancel, onApplyToZone }: {
 }
 
 function padLabel(f: string): string {
-  const map: Record<string, string> = { bold: "Negrito", dim: "Fraco (dim)", underscore: "Sublinhado", reverse: "Inverter", italics: "Itálico" };
+  const map: Record<string, string> = {
+    bold: t("attr.bold"), dim: t("attr.dim"), underscore: t("attr.underscore"),
+    reverse: t("attr.reverse"), italics: t("attr.italics"),
+  };
   return map[f] ?? f;
 }

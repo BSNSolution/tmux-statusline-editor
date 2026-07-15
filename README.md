@@ -1,179 +1,174 @@
-# tmux-statusline-editor
+<div align="center">
 
-> Um editor **visual** da statusline do tmux, no próprio terminal (TUI). Pense num
-> [`tweakcc`](https://github.com/piqoni/tweakcc), mas para o tmux: você monta a barra
-> escolhendo itens de uma biblioteca em linguagem humana, ajusta cores com preview fiel,
-> aplica ao vivo e mantém histórico de versões — sem precisar decorar `#{...}` nem `#[fg=...]`.
+# 🎨 tmux-statusline-editor
 
-Feito pela [BSN Solution](https://bsnsolution.com.br). Roda em macOS e Linux.
+### A visual editor for your tmux status line — right in the terminal.
+
+Build your bar by picking items from a plain-language library, tweak colors with a faithful
+live preview, and apply instantly. No more memorizing `#{...}` or `#[fg=...]`.
+
+**Think [`tweakcc`](https://github.com/piqoni/tweakcc), but for tmux.**
+
+[![License: MIT](https://img.shields.io/badge/License-MIT-7C5CFF.svg)](LICENSE)
+[![TypeScript](https://img.shields.io/badge/TypeScript-strict-3178C6.svg?logo=typescript&logoColor=white)](https://www.typescriptlang.org/)
+[![tmux 3.x](https://img.shields.io/badge/tmux-3.x-1BB91F.svg?logo=tmux&logoColor=white)](https://github.com/tmux/tmux)
+[![Platform](https://img.shields.io/badge/platform-macOS%20%7C%20Linux-lightgrey.svg)](#requirements)
+[![PRs Welcome](https://img.shields.io/badge/PRs-welcome-brightgreen.svg)](#-contributing)
+
+🇧🇷 **[Leia em português →](README.pt-BR.md)**
+
+</div>
 
 ---
 
-## Por que
+```
+ ⚡ BSN Solution     1:BSN ⚙   2:Mac 🔔   3:ATM   4:TRIGO   5:CREA          host · 14:35:07
+ └────────────────┘ └── tabs, live agent status ──┘                      └── real values ──┘
+        ▲ status-left                                                          ▲ status-right
+```
 
-Configurar a statusline do tmux à mão é críptico: `status-left`, `#[fg=#9b988f,bg=#15161A]`,
-`#{?window_zoomed_flag,...}`, `#(script)`... Este editor traduz tudo para linguagem de gente
-("Nome da aba", "Bateria", "Branch git"), mostra um **preview fiel** (renderizado pelo próprio
-tmux, com seus valores reais) e aplica a mudança na hora — com **backup e histórico** para você
-nunca perder uma configuração.
+The whole bar above is built and colored inside the TUI — including the powerline borders and the
+per-tab AI-agent indicator. Everything you see is rendered by tmux itself, so the preview never lies.
 
-## Recursos
+---
 
-- **Biblioteca com 80+ itens** em categorias humanas: sessão, janela/painel, host, data/hora,
-  git, ícones (Nerd Font), separadores powerline, widgets (bateria, CPU, IP…), combos prontos
-  e uma categoria **Dev: Claude Code & Ghostty**.
-- **Busca por texto** na biblioteca (digite "git", "bateria", "hora"…).
-- **Editor de cores** por segmento: fg/bg por nome ou hex, negrito, itálico, sublinhado, etc.,
-  com **copiar/colar estilo** entre itens e "aplicar à zona inteira".
-- **Preview fiel**: cada segmento é expandido pelo tmux (`display-message`), com as janelas,
-  host e hora reais — em truecolor.
-- **Aplicar ao vivo** (`tmux source-file`) + **histórico de versões** com backup automático.
-- **Mover, duplicar, remover** itens; **gestão de temas** (desativar/reativar plugins que
-  brigam pela statusline, como tokyo-night).
-- **Indicador de agentes de IA nas abas** (opcional): mostra um ícone em cada aba conforme o
-  Claude Code está trabalhando (⚙) ou precisa de você (🔔) — inclusive em abas de fundo.
-- **Portável e autossuficiente**: nada de caminhos fixos; um comando `doctor` verifica e
-  instala o que faltar.
+## ✨ Why you'll like it
 
-## Requisitos
+Configuring the tmux status line by hand is cryptic — `#[fg=#9b988f,bg=#15161A]`,
+`#{?window_zoomed_flag,...}`, `#(script)`. This editor turns all of that into plain language,
+shows a **faithful preview**, and applies changes live with **backups and version history** so
+you never lose a config.
 
-| Dependência           | Necessário | Para quê |
-|-----------------------|:----------:|----------|
-| **tmux** 3.x          | ✅ | é o que estamos configurando |
-| **Node.js** 18+       | ✅ | roda a CLI |
-| **pnpm**              | só p/ build a partir do fonte | build do monorepo |
-| **Nerd Font**         | recomendado | ícones e bordas powerline (senão viram quadrados) |
-| **tmux-agent-indicator** | opcional | itens "Dev: Claude Code" nas abas |
+- 🧩 **80+ item library** in human categories — session, window/pane, host, date/time, git, Nerd
+  Font icons, powerline separators, widgets (battery, CPU, IP…), ready-made combos, and a
+  **Claude Code & Ghostty** category.
+- 🔍 **Type-to-search** the library — "git", "battery", "clock", "icon"…
+- 🎨 **Per-segment colors** (name or hex), bold/italic/underline, plus **copy/paste style** and
+  "apply to the whole zone".
+- 👁️ **Faithful preview** — every segment expanded by tmux with your real windows, host and time,
+  in truecolor.
+- ⏱️ **Apply live** + **version history** with automatic backups.
+- 🔀 **Move / duplicate / remove** items; **theme management** for plugins that hijack the bar
+  (tokyo-night, etc.).
+- 🤖 **AI agent indicator in tabs** — see ⚙ (working) / 🔔 (needs you) on every tab, even in the
+  background, driven by [Claude Code](https://claude.com/claude-code).
+- 🌍 **Bilingual** (English / Portuguese), auto-detected from your system, English by default.
+- 📦 **Self-sufficient** — a `doctor` command checks and installs everything you need. No
+  hardcoded paths; runs on any machine.
 
-> Não sabe o que tem instalado? Rode `tmux-statusline doctor` — ele diz o que existe e o que falta.
-> Com `doctor --fix`, ele instala (usa `brew` no macOS; `apt`/`dnf`/`pacman` no Linux).
-
-## Instalação
+## 🚀 Quick start
 
 ```bash
 git clone https://github.com/BSNSolution/tmux-statusline-editor.git
 cd tmux-statusline-editor
 
-# 1) verifique/instale dependências (opcional, mas recomendado)
-bash cli/scripts/doctor.sh --fix
-
-# 2) instale e compile
-pnpm install
-pnpm build:strict
-
-# 3) rode
-./run.sh
+bash cli/scripts/doctor.sh --fix   # check & install dependencies (optional)
+pnpm install && pnpm build:strict  # build
+./run.sh                           # launch the editor
 ```
 
-O `run.sh` força truecolor (`FORCE_COLOR=3`) para as cores baterem dentro do tmux.
+That's it — `run.sh` forces truecolor so colors match inside tmux. Press `a` to add an item,
+`e` to edit, `Enter` to apply. Your current bar is imported automatically.
 
-## Uso
+## ⌨️ Editor keys
+
+| Key | Action | | Key | Action |
+|-----|--------|-|-----|--------|
+| `←` `→` | switch bar part | | `e` | **edit** (searchable library + colors) |
+| `↑` `↓` | move between items | | `c`/`v`/`V` | **copy** / paste / paste-to-zone color |
+| `,` `.` | **move** the item | | `l` | **clear** the zone's colors |
+| `a` | **add** item (search) | | `g` | general options |
+| `d` | **duplicate** | | `Enter` | **apply** to tmux (saves a version) |
+| `r` | **remove** | | `Tab` / `q` | switch tab / quit |
+
+## 📸 What it does
+
+<table>
+<tr><td><b>Human library</b></td><td>Pick "Window name", "Battery", "Git branch" — never <code>#W</code> or <code>#{...}</code>. Each item shows a real example of its output.</td></tr>
+<tr><td><b>Faithful preview</b></td><td>The bar at the top is rendered by tmux with your real session, windows, host and clock — what you see is what you'll get.</td></tr>
+<tr><td><b>Version history</b></td><td>Every apply saves a JSON version and backs up your <code>~/.tmux.conf</code>. Roll back anytime.</td></tr>
+<tr><td><b>Agent indicator</b></td><td>Running Claude Code in several panes? Each tab shows ⚙/🔔 so you know which one needs you — even in the background.</td></tr>
+</table>
+
+## 📋 Requirements
+
+| Dependency | Required | For |
+|------------|:--------:|-----|
+| **tmux** 3.x | ✅ | it's what we're configuring |
+| **Node.js** 18+ | ✅ | runs the CLI |
+| **pnpm** | build from source | monorepo build |
+| **Nerd Font** | recommended | icons & powerline borders |
+| **tmux-agent-indicator** | optional | the Claude Code items in tabs |
+
+> Run `tmux-statusline doctor` to see what's installed, or `doctor --fix` to install the rest
+> (`brew` on macOS; `apt`/`dnf`/`pacman` on Linux).
+
+## 🤖 Agent indicator in tabs
+
+If you run [Claude Code](https://claude.com/claude-code) across tmux panes, this shows on **each
+tab** whether the agent is working or waiting — including background tabs.
 
 ```bash
-./run.sh                         # abre o editor (TUI)
-node cli/dist/main.js doctor     # verifica dependências
-node cli/dist/main.js doctor --fix
-node cli/dist/main.js agent-tabs         # liga o indicador do Claude nas abas
-node cli/dist/main.js agent-tabs stop    # desliga
-node cli/dist/main.js --help
+node cli/dist/main.js agent-tabs   # start the daemon (needs tmux-agent-indicator)
 ```
 
-### Teclas do editor
+Then add `#{@agent_icon}` to your `window-status-format` (you can do it from the editor). The
+daemon scans **all panes** of each window, shows ⚙/🔔 (running beats needs), **clears when you
+focus the pane**, **expires on its own** (no stuck icons), and leaves **no gap** when idle.
 
-| Tecla | Ação |
-|-------|------|
-| `←` / `→` | navegar entre as partes da barra (esquerda, abas, aba atual, direita) |
-| `↑` / `↓` | navegar entre os itens |
-| `,` / `.` (ou `Shift+↑/↓`) | **mover** o item na ordem |
-| `a` | **adicionar** item (com busca por texto) |
-| `d` | **duplicar** item |
-| `r` | **remover** item |
-| `e` | **editar** item (conteúdo via biblioteca buscável + cores) |
-| `c` / `v` / `V` | **copiar** / **colar** cor / colar na zona inteira |
-| `l` | **limpar** cores da zona |
-| `g` | opções gerais (fundo geral, posição, intervalo…) |
-| `Enter` | **aplicar** no tmux (salva uma versão) |
-| `Tab` | trocar de aba (editor / histórico / temas) |
-| `q` | sair |
+## 🏗️ How it works
 
-### Indicador de agentes nas abas
-
-Se você usa [Claude Code](https://claude.com/claude-code) em vários painéis do tmux, o editor
-pode mostrar em **cada aba** se o agente está trabalhando ou esperando você — inclusive nas abas
-que estão em background.
-
-Requer o plugin [`tmux-agent-indicator`](https://github.com/accessd/tmux-agent-indicator)
-(o `doctor` instala). Depois:
-
-```bash
-node cli/dist/main.js agent-tabs   # sobe o daemon
-```
-
-E no seu `window-status-format` (dá pra fazer pelo editor), inclua `#{@agent_icon}` onde quiser
-o ícone. O daemon:
-
-- varre **todos os painéis** de cada janela (não só o ativo);
-- mostra ⚙ (trabalhando) ou 🔔 (precisa de você); **running vence needs**;
-- **some ao focar o painel** (você já viu o alerta) e **expira sozinho** (anti-"ícone preso");
-- some **sem deixar espaço** quando não há agente.
-
-## Como funciona
-
-Monorepo pnpm com dois pacotes:
+pnpm monorepo, two packages, pure core + thin TUI:
 
 ```
-shared/   @tse/shared — núcleo puro e testado (sem I/O)
-  model.ts       tipos: Segment, StatusModel, TmuxStyle, Theme
-  catalog.ts     biblioteca de ~80 itens (o que dá pra pôr na barra)
-  parser.ts      statusline crua  →  modelo (respeita #{...}, #(...), #[...])
-  generator.ts   modelo  →  statusline crua (só reemite #[...] quando muda)
-  roundtrip.test.ts  garante parser∘generator = identidade
-
-cli/      @tse/cli — a TUI (Ink/React) + I/O do tmux
-  ui/            App, EditSegment, EditOptions, RealPreview, human.ts
-  tmux.ts        importar/aplicar via tmux, expandir formats, janelas reais
-  history.ts     versões + backup + prune + pin
-  themes-cli.ts  desativar/reativar plugins de tema
-  scripts/       doctor.sh (dependências) · agent-tabs-daemon.sh (indicador)
+shared/  @tse/shared — pure, tested core (no I/O)
+  parser.ts / generator.ts   raw status line ⇄ model, round-trip tested
+  catalog.ts + i18n          ~85 items, English default + Portuguese
+cli/     @tse/cli — the Ink/React TUI + tmux I/O
+  ui/                        editor, color editor, faithful preview
+  scripts/                   doctor.sh, agent-tabs-daemon.sh
 ```
 
-O **parser** e o **gerador** são o coração: convertem a statusline nos dois sentidos sem perder
-nada (validado por testes de ida-e-volta com statuslines reais). A TUI só orquestra e mostra;
-o preview pergunta ao próprio tmux como ele renderiza, para não mentir.
+The **parser** and **generator** convert the status line both ways without losing anything
+(guaranteed by round-trip tests against real bars). The preview asks tmux how it renders — so it
+can't lie. User data lives in `~/.config/tmux-statusline/` (`history/` + `backups/`).
 
-### Dados e backups
-
-Tudo do usuário fica em `~/.config/tmux-statusline/`:
-
-```
-history/   uma versão por "aplicar" (JSON) — restaurável
-backups/   cópias do ~/.tmux.conf e da statusline antes de cada mudança
-```
-
-## Desenvolvimento
+## 🛠️ Development
 
 ```bash
 pnpm install
-pnpm build:strict          # tsc --noEmit && tsc -b nos dois pacotes
-node --test shared/dist/roundtrip.test.js   # testes do núcleo
-./run.sh                   # roda a TUI
+pnpm build:strict                             # tsc --noEmit && tsc -b (both packages)
+node --test shared/dist/roundtrip.test.js     # core tests
+./run.sh                                       # run the TUI
 ```
 
-TypeScript estrito (`noUncheckedIndexedAccess`), project references (`composite`), sem `any`.
+Strict TypeScript (`noUncheckedIndexedAccess`), project references, no `any`.
 
-## Gotchas conhecidos (documentados)
+## 🐛 Known gotchas (and how we handle them)
 
-- `#()` no `window-status-format` **só roda no contexto da aba ativa** — por isso o indicador de
-  agentes usa `#{@agent_icon}` (opção de usuário por janela, que o tmux expande por-aba) + daemon.
-- Estilos de plugin (`window-status-activity-style = reverse`) podem **inverter fg/bg** nas abas
-  com atividade — o editor neutraliza isso ao importar/aplicar.
-- Plugins de tema (tokyo-night) injetam estilos na **memória** do tmux que persistem após comentar
-  a linha — use a gestão de temas do editor (não `kill-server`).
+- `#()` in `window-status-format` only runs in the **active tab's** context — the agent indicator
+  uses `#{@agent_icon}` (a per-window option tmux expands per-tab) + a daemon instead.
+- `window-status-activity-style = reverse` (from plugins) can invert fg/bg — neutralized on import.
+- Theme plugins inject styles into tmux **memory** that survive commenting the line — use the
+  editor's theme management, never `kill-server`.
 
-## Licença
+## 🤝 Contributing
 
-MIT © BSN Solution. Veja [LICENSE](LICENSE).
+Contributions are very welcome — this started as a scratch-your-own-itch tool and grew into
+something we think many tmux users will enjoy.
 
-## Contribuindo
+- 🐞 **Found a bug?** Open an issue with your tmux version (`tmux -V`) and steps to reproduce.
+- 💡 **Want a new item** for the library (a new widget, icon, or combo)? PRs to `shared/src/catalog.ts`
+  are easy and high-impact — add the item, a translation in `catalog-i18n.ts`, and you're done.
+- 🌍 **Another language?** The i18n layer (`shared/src/i18n.ts`) is simple to extend.
+- ✅ Before opening a PR: `pnpm build:strict` and `node --test shared/dist/roundtrip.test.js` must pass.
 
-Issues e PRs são bem-vindos. Antes de abrir PR, rode `pnpm build:strict` e os testes.
+Good first issues: new catalog items, more ready-made combos, theme presets, and the themes gallery.
+
+## 📄 License
+
+[MIT](LICENSE) © [BSN Solution](https://bsnsolution.com.br) — free to use, modify, and share.
+
+<div align="center">
+<sub>If this saved you from fighting <code>#[fg=...]</code>, consider giving it a ⭐.</sub>
+</div>

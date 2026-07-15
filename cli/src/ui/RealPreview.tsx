@@ -3,7 +3,7 @@
 // host, hora, sessão…), preservando o estilo do segmento. As abas iteram as janelas REAIS.
 import React, { useEffect, useState } from "react";
 import { Box, Text } from "ink";
-import type { Segment, StatusModel, TmuxStyle } from "@tse/shared";
+import { t, type Segment, type StatusModel, type TmuxStyle } from "@tse/shared";
 import { listRealWindows, expandFormat, type RealWindow } from "../tmux.js";
 import { exampleValue } from "./human.js";
 
@@ -84,12 +84,12 @@ export function RealPreview({ model }: { model: StatusModel }): React.ReactEleme
 
   return (
     <Box borderStyle="single" borderColor="gray" paddingX={1} flexDirection="column">
-      <Text dimColor>preview (como fica de verdade):</Text>
+      <Text dimColor>{t("preview.real")}</Text>
       <Box>
         <Text backgroundColor={bg} color={fg} wrap="truncate-end">
           {leftChunks.map((c) => <StyledChunk key={c.key} text={c.text} style={c.style} />)}
           {winChunks.map((c) => <StyledChunk key={c.key} text={c.text} style={c.style} />)}
-          {windows.length === 0 ? <Text dimColor> (sem janelas) </Text> : null}
+          {windows.length === 0 ? <Text dimColor>{t("noWindows")}</Text> : null}
           <Text backgroundColor={bg}>{" ".repeat(gap)}</Text>
           {rightChunks.map((c) => <StyledChunk key={c.key} text={c.text} style={c.style} />)}
         </Text>

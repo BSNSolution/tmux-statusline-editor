@@ -3,6 +3,7 @@
 // É aqui que se muda a "cor de fundo geral" (#9b988f/status-style) que não pertence a nenhum segmento.
 import React, { useState } from "react";
 import { Box, Text, useInput } from "ink";
+import { t } from "@tse/shared";
 import type { StatusModel, TmuxStyle } from "@tse/shared";
 
 const SWATCHES: { name: string; hex: string }[] = [
@@ -67,28 +68,28 @@ export function EditOptions({ model, onSave, onCancel }: {
 
   const row = (f: Field, label: string, value: React.ReactNode) => (
     <Box>
-      <Text inverse={field === f}>{field === f ? "› " : "  "}{label}: </Text>
+      <Text inverse={field === f}>{field === f ? "› " : "  "}{label}</Text>
       {value}
     </Box>
   );
 
   return (
     <Box flexDirection="column" borderStyle="round" borderColor="#7C5CFF" paddingX={1}>
-      <Text bold color="#7C5CFF">Opções gerais da barra — ↑/↓ campo · ←/→ valor · Enter salva · Esc cancela</Text>
+      <Text bold color="#7C5CFF">{t("opt.title")}</Text>
       <Box>
-        <Text dimColor>preview do fundo: </Text>
-        <Text backgroundColor={opt.style.bg} color={opt.style.fg}>  exemplo de texto na barra  </Text>
+        <Text dimColor>{t("opt.bgPreview")}</Text>
+        <Text backgroundColor={opt.style.bg} color={opt.style.fg}>{t("opt.bgSample")}</Text>
       </Box>
-      {row("bg", "Cor de fundo GERAL (bg)",
+      {row("bg", t("opt.bg"),
         <Text backgroundColor={opt.style.bg}>{"  "}{SWATCHES[swatchIndex(opt.style.bg)]!.name}{"  "}</Text>)}
-      {row("fg", "Cor de texto GERAL (fg)",
+      {row("fg", t("opt.fg"),
         <Text color={opt.style.fg}>{SWATCHES[swatchIndex(opt.style.fg)]!.name} {opt.style.fg ?? ""}</Text>)}
-      {row("position", "Posição", <Text color="#5fb8c8">{opt.position === "bottom" ? "embaixo" : "em cima"}</Text>)}
-      {row("justify", "Alinhamento", <Text color="#5fb8c8">{opt.justify}</Text>)}
-      {row("interval", "Atualizar a cada (s)", <Text color="#5fb8c8">{opt.interval}s</Text>)}
-      {row("leftLen", "Tam. máx. esquerda", <Text color="#5fb8c8">{opt.leftLength}</Text>)}
-      {row("rightLen", "Tam. máx. direita", <Text color="#5fb8c8">{opt.rightLength}</Text>)}
-      <Text dimColor>dica: aqui muda o fundo da barra inteira (o #9b988f / status-style).</Text>
+      {row("position", t("opt.position"), <Text color="#5fb8c8">{opt.position === "bottom" ? t("opt.posBottom") : t("opt.posTop")}</Text>)}
+      {row("justify", t("opt.justify"), <Text color="#5fb8c8">{opt.justify}</Text>)}
+      {row("interval", t("opt.interval"), <Text color="#5fb8c8">{opt.interval}s</Text>)}
+      {row("leftLen", t("opt.leftLen"), <Text color="#5fb8c8">{opt.leftLength}</Text>)}
+      {row("rightLen", t("opt.rightLen"), <Text color="#5fb8c8">{opt.rightLength}</Text>)}
+      <Text dimColor>{t("opt.bgHint")}</Text>
     </Box>
   );
 }

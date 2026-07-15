@@ -40,62 +40,90 @@ NEEDS_TTL="${NEEDS_TTL:-90}"
 ICON_NEEDS="${ICON_NEEDS:- $(printf '\357\203\263')}"
 ICON_RUN="${ICON_RUN:- $(printf '\357\200\223')}"
 AGENT_PROCS="${AGENT_PROCS:-claude,codex,aider,cursor,opencode}"
+# CPU (%) acima da qual consideramos o agente "trabalhando de verdade". Abaixo disso, o processo
+# claude está vivo mas OCIOSO (esperando você) → não mostra ⚙. Ajuste com CPU_BUSY.
+CPU_BUSY="${CPU_BUSY:-5}"
+# HISTERESE: a CPU oscila (sobe/desce a cada leitura mesmo trabalhando). Uma vez detectado "busy",
+# seguramos o ⚙ por BUSY_HOLD segundos após a ÚLTIMA leitura acima do limiar — assim o ícone não
+# fica piscando nas quedas momentâneas de CPU. Só apaga quando fica ocioso de verdade por esse tempo.
+BUSY_HOLD="${BUSY_HOLD:-12}"
 
 now() { date +%s; }
 
-# Há um processo de agente vivo no pane? (detecção por processo — sempre atual, não depende de hook)
-pane_has_agent() {
+# CPU% somada dos processos de agente no pane. "" se não há agente vivo no pane.
+pane_agent_cpu() {
   pane="$1"
   tty=$(tmux_cmd display-message -p -t "$pane" '#{pane_tty}' 2>/dev/null)
-  [ -n "$tty" ] || return 1
-  procs=$(ps -t "$(basename "$tty")" -o command= 2>/dev/null)
-  oldifs="$IFS"; IFS=,
-  for proc in $AGENT_PROCS; do
-    if printf '%s\n' "$procs" | grep -qw "$proc"; then IFS="$oldifs"; return 0; fi
-  done
-  IFS="$oldifs"; return 1
+  [ -n "$tty" ] || { printf ''; return; }
+  # linhas "cpu% command" dos processos desse tty; soma a CPU dos que casam AGENT_PROCS
+  ps -t "$(basename "$tty")" -o %cpu,command= 2>/dev/null | awk -v procs="$AGENT_PROCS" '
+    BEGIN { n=split(procs,a,","); found=0; sum=0 }
+    { for (i=1;i<=n;i++) if (index($0,a[i])>0) { sum+=$1; found=1; break } }
+    END { if (found) printf "%d", sum+0.5; else printf "" }'
 }
 
-# Estado efetivo de UM pane, aplicando anti-zumbi. Retorna: run | needs | "".
+# Há um agente vivo no pane (ocioso ou não)?
+pane_has_agent() { [ -n "$(pane_agent_cpu "$1")" ]; }
+
+# O agente do pane está TRABALHANDO agora (CPU acima do limiar)?
+pane_is_busy() {
+  cpu=$(pane_agent_cpu "$1")
+  [ -n "$cpu" ] && [ "$cpu" -ge "$CPU_BUSY" ]
+}
+
+# Estado efetivo de UM pane. Retorna: run | needs | "".
+# HIERARQUIA (nesta ordem):
+#   1) TRABALHANDO (CPU) vence tudo. Se o agente está processando, NÃO está travado esperando você —
+#      mostra ⚙ e LIMPA qualquer needs zumbi. Com histerese (BUSY_HOLD) p/ não piscar nas quedas de CPU.
+#   2) Se não está trabalhando, então NEEDS-INPUT recente (do environment, com TTL) → 🔔.
+#   3) Senão, ocioso/sem agente → sem ícone.
 pane_effective_state() {
   pane="$1"
+
+  # 1) TRABALHANDO? (CPU acima do limiar, com histerese)
+  if pane_is_busy "$pane"; then
+    tmux_cmd set-environment -g "TSE_BUSY_AT_${pane}" "$(now)" 2>/dev/null || true
+    # está trabalhando → não pode estar esperando você: limpa needs zumbi
+    tmux_cmd set-environment -gu "TSE_NEEDS_AT_${pane}" 2>/dev/null || true
+    printf 'run'; return
+  fi
+  bat=$(tmux_cmd show-environment -g "TSE_BUSY_AT_${pane}" 2>/dev/null | cut -d= -f2)
+  if [ -n "$bat" ] && [ "$(( $(now) - bat ))" -le "$BUSY_HOLD" ]; then
+    printf 'run'; return   # dentro da histerese: mantém ⚙ mesmo com CPU baixa momentânea
+  fi
+  tmux_cmd set-environment -gu "TSE_BUSY_AT_${pane}" 2>/dev/null || true
+
+  # 2) NEEDS-INPUT recente? (só quando NÃO está trabalhando)
   s=$(tmux_cmd show-environment -g "TMUX_AGENT_PANE_${pane}_STATE" 2>/dev/null | cut -d= -f2)
   case "$s" in
-    running)
-      # limpa carimbo de needs, se havia
-      tmux_cmd set-environment -gu "TSE_NEEDS_AT_${pane}" 2>/dev/null || true
-      printf 'run' ;;
     needs-input|needs_input)
-      # carimba o momento em que vimos needs (se ainda não carimbado)
       at=$(tmux_cmd show-environment -g "TSE_NEEDS_AT_${pane}" 2>/dev/null | cut -d= -f2)
       if [ -z "$at" ]; then
         at=$(now); tmux_cmd set-environment -g "TSE_NEEDS_AT_${pane}" "$at" 2>/dev/null || true
       fi
-      age=$(( $(now) - at ))
-      if [ "$age" -gt "$NEEDS_TTL" ]; then
-        printf ''            # expirou: trata como resolvido (evita 🔔 preso)
-      else
-        printf 'needs'
-      fi ;;
+      if [ "$(( $(now) - at ))" -le "$NEEDS_TTL" ]; then printf 'needs'; return; fi
+      ;;
     *)
-      tmux_cmd set-environment -gu "TSE_NEEDS_AT_${pane}" 2>/dev/null || true
-      printf '' ;;
+      tmux_cmd set-environment -gu "TSE_NEEDS_AT_${pane}" 2>/dev/null || true ;;
   esac
+
+  # 3) ocioso / sem agente
+  printf ''
 }
 
-# Estado de uma janela: running vence needs. Só conta panes que ainda têm agente vivo.
+# Estado da janela: varre TODOS os panes. Como cada pane já resolve busy>needs internamente, um pane
+# só reporta "needs" se está PARADO esperando você. needs vence run na janela (alerta tem prioridade).
 window_state() {
   win="$1"; any_run=""; any_needs=""
   for p in $(tmux_cmd list-panes -t "$win" -F '#{pane_id}' 2>/dev/null); do
-    pane_has_agent "$p" || continue
     st=$(pane_effective_state "$p")
     case "$st" in
       run) any_run=1 ;;
       needs) any_needs=1 ;;
     esac
   done
-  if [ -n "$any_run" ]; then printf 'run'
-  elif [ -n "$any_needs" ]; then printf 'needs'
+  if [ -n "$any_needs" ]; then printf 'needs'
+  elif [ -n "$any_run" ]; then printf 'run'
   fi
 }
 

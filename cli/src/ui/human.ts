@@ -1,6 +1,9 @@
 // human.ts — traduz segmentos/tokens do tmux para linguagem HUMANA + valor-exemplo.
 // Objetivo: o usuário nunca precisa saber que #I é "índice" ou #W é "nome".
-import { CATALOG, type Segment } from "@tse/shared";
+import { CATALOG, itemLabel, itemDescription, getLang, type Segment } from "@tse/shared";
+
+// rótulos de fallback (quando não vem do catálogo), por idioma
+function fb(en: string, pt: string): string { return getLang() === "pt" ? pt : en; }
 
 /** Valores de exemplo para renderizar um preview que parece o resultado final. */
 const EXAMPLE: Record<string, string> = {
@@ -23,20 +26,20 @@ const EXAMPLE: Record<string, string> = {
 
 /** Nome humano de um segmento (sem jargão). Usa o catálogo, com fallbacks amigáveis. */
 export function humanName(seg: Segment): string {
-  // catálogo primeiro (labels já são humanos)
+  // catálogo primeiro (labels já são humanos, traduzidos pelo idioma ativo)
   const byKey = seg.catalogKey ? CATALOG.find((c) => c.key === seg.catalogKey) : undefined;
-  if (byKey) return byKey.label;
+  if (byKey) return itemLabel(byKey);
   const byInsert = CATALOG.find((c) => c.insert === seg.content);
-  if (byInsert) return byInsert.label;
+  if (byInsert) return itemLabel(byInsert);
 
-  if (seg.kind === "command") return "Widget/Script";
-  if (seg.kind === "conditional") return "Condição";
+  if (seg.kind === "command") return fb("Widget/Script", "Widget/Script");
+  if (seg.kind === "conditional") return fb("Condition", "Condição");
   if (seg.kind === "text") {
     const t = seg.content.trim();
-    if (t === "") return "Espaço";
-    if (/^[·|:\-–—/]+$/.test(t)) return `Separador "${t}"`;
-    if (t.includes("%")) return "Data/Hora";
-    return `Texto "${truncate(t, 16)}"`;
+    if (t === "") return fb("Space", "Espaço");
+    if (/^[·|:\-–—/]+$/.test(t)) return fb(`Separator "${t}"`, `Separador "${t}"`);
+    if (t.includes("%")) return fb("Date/Time", "Data/Hora");
+    return fb(`Text "${truncate(t, 16)}"`, `Texto "${truncate(t, 16)}"`);
   }
   return truncate(seg.content, 20);
 }
@@ -64,11 +67,11 @@ export function exampleValue(seg: Segment): string {
 /** Descrição de 1 linha (leigo) do que o segmento faz. */
 export function humanDescription(seg: Segment): string {
   const byKey = seg.catalogKey ? CATALOG.find((c) => c.key === seg.catalogKey) : undefined;
-  if (byKey) return byKey.description;
+  if (byKey) return itemDescription(byKey);
   const byInsert = CATALOG.find((c) => c.insert === seg.content);
-  if (byInsert) return byInsert.description;
-  if (seg.kind === "command") return "Roda um comando e mostra a saída.";
-  if (seg.kind === "text") return "Texto fixo que sempre aparece.";
+  if (byInsert) return itemDescription(byInsert);
+  if (seg.kind === "command") return fb("Runs a command and shows its output.", "Roda um comando e mostra a saída.");
+  if (seg.kind === "text") return fb("Fixed text that always shows.", "Texto fixo que sempre aparece.");
   return "";
 }
 

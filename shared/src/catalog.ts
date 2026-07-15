@@ -18,138 +18,138 @@ export interface CatalogItem {
 }
 
 export type CatalogCategory =
-  | "Sessão & Cliente"
-  | "Janela & Painel"
-  | "Host & Sistema"
-  | "Data & Hora"
-  | "Git & Projeto"
-  | "Condicionais & Estado"
-  | "Texto & Separadores"
-  | "Ícones (Nerd Font)"
+  | "Session & Client"
+  | "Window & Pane"
+  | "Host & System"
+  | "Date & Time"
+  | "Git & Project"
+  | "Conditionals & State"
+  | "Text & Separators"
+  | "Icons (Nerd Font)"
   | "Widgets (scripts)"
-  | "Prontos ✨ (legais)"
+  | "Ready-made ✨ (cool)"
   | "Dev: Claude Code & Ghostty 󰚩";
 
 export const CATALOG: CatalogItem[] = [
   // ---- Sessão & Cliente ----
-  { key: "session_name", insert: "#S", label: "Nome da sessão", category: "Sessão & Cliente", description: "Nome da sessão atual.", example: "main" },
-  { key: "session_id", insert: "#{session_id}", label: "ID da sessão", category: "Sessão & Cliente", description: "Identificador único da sessão.", example: "$0" },
-  { key: "session_windows", insert: "#{session_windows}", label: "Nº de janelas", category: "Sessão & Cliente", description: "Quantidade de janelas na sessão.", example: "3" },
-  { key: "session_attached", insert: "#{session_attached}", label: "Clientes conectados", category: "Sessão & Cliente", description: "Quantos clientes estão conectados nesta sessão.", example: "1" },
-  { key: "client_prefix", insert: "#{?client_prefix,PREFIXO,}", label: "Prefixo ativo?", category: "Sessão & Cliente", description: "Mostra algo quando o prefixo (C-b) está ativo.", kind: "conditional", example: "PREFIXO" },
-  { key: "client_key_table", insert: "#{client_key_table}", label: "Key table", category: "Sessão & Cliente", description: "Tabela de teclas ativa (root/prefix/copy-mode).", example: "root" },
+  { key: "session_name", insert: "#S", label: "Session name", category: "Session & Client", description: "Current session name.", example: "main" },
+  { key: "session_id", insert: "#{session_id}", label: "Session ID", category: "Session & Client", description: "Unique session identifier.", example: "$0" },
+  { key: "session_windows", insert: "#{session_windows}", label: "Window count", category: "Session & Client", description: "Number of windows in the session.", example: "3" },
+  { key: "session_attached", insert: "#{session_attached}", label: "Attached clients", category: "Session & Client", description: "How many clients are attached to this session.", example: "1" },
+  { key: "client_prefix", insert: "#{?client_prefix,PREFIXO,}", label: "Prefix active?", category: "Session & Client", description: "Shows something when the prefix (C-b) is active.", kind: "conditional", example: "PREFIXO" },
+  { key: "client_key_table", insert: "#{client_key_table}", label: "Key table", category: "Session & Client", description: "Active key table (root/prefix/copy-mode).", example: "root" },
 
   // ---- Janela & Painel ----
-  { key: "window_index", insert: "#I", label: "Número da aba", category: "Janela & Painel", description: "Número da janela.", example: "1" },
-  { key: "window_name", insert: "#W", label: "Nome da aba", category: "Janela & Painel", description: "Nome da janela.", example: "zsh" },
-  { key: "window_flags", insert: "#F", label: "Marcadores da aba", category: "Janela & Painel", description: "Flags (*=atual, -=última, Z=zoom).", example: "*" },
-  { key: "pane_current_path", insert: "#{pane_current_path}", label: "Pasta atual", category: "Janela & Painel", description: "Caminho do painel atual.", example: "~/Work" },
-  { key: "pane_current_path_base", insert: "#{b:pane_current_path}", label: "Pasta atual (só o nome)", category: "Janela & Painel", description: "Só o nome da pasta atual (sem o caminho todo).", example: "Work" },
-  { key: "pane_current_command", insert: "#{pane_current_command}", label: "Comando atual", category: "Janela & Painel", description: "Comando rodando no painel.", example: "nvim" },
-  { key: "pane_index", insert: "#P", label: "Número do painel", category: "Janela & Painel", description: "Índice do painel dentro da janela.", example: "0" },
-  { key: "pane_pid", insert: "#{pane_pid}", label: "PID do painel", category: "Janela & Painel", description: "ID do processo do shell do painel.", example: "48213" },
-  { key: "pane_title", insert: "#T", label: "Título do painel", category: "Janela & Painel", description: "Título do painel.", example: "bash" },
-  { key: "window_zoomed", insert: "#{?window_zoomed_flag,ZOOM,}", label: "Zoom?", category: "Janela & Painel", description: "Indica quando um painel está com zoom.", kind: "conditional", example: "ZOOM" },
-  { key: "window_activity", insert: "#{?window_activity_flag,●,}", label: "Atividade na aba?", category: "Janela & Painel", description: "Marca ● quando houve atividade recente na janela.", kind: "conditional", example: "●" },
-  { key: "window_bell", insert: "#{?window_bell_flag,🔔,}", label: "Sino/alerta na aba?", category: "Janela & Painel", description: "Marca quando a janela disparou um alerta (bell).", kind: "conditional", example: "🔔" },
+  { key: "window_index", insert: "#I", label: "Tab number", category: "Window & Pane", description: "Window number.", example: "1" },
+  { key: "window_name", insert: "#W", label: "Tab name", category: "Window & Pane", description: "Window name.", example: "zsh" },
+  { key: "window_flags", insert: "#F", label: "Tab flags", category: "Window & Pane", description: "Flags (*=current, -=last, Z=zoom).", example: "*" },
+  { key: "pane_current_path", insert: "#{pane_current_path}", label: "Current folder", category: "Window & Pane", description: "Path of the current pane.", example: "~/Work" },
+  { key: "pane_current_path_base", insert: "#{b:pane_current_path}", label: "Current folder (name only)", category: "Window & Pane", description: "Just the current folder name (without the full path).", example: "Work" },
+  { key: "pane_current_command", insert: "#{pane_current_command}", label: "Current command", category: "Window & Pane", description: "Command running in the pane.", example: "nvim" },
+  { key: "pane_index", insert: "#P", label: "Pane number", category: "Window & Pane", description: "Pane index within the window.", example: "0" },
+  { key: "pane_pid", insert: "#{pane_pid}", label: "Pane PID", category: "Window & Pane", description: "Process ID of the pane's shell.", example: "48213" },
+  { key: "pane_title", insert: "#T", label: "Pane title", category: "Window & Pane", description: "Pane title.", example: "bash" },
+  { key: "window_zoomed", insert: "#{?window_zoomed_flag,ZOOM,}", label: "Zoomed?", category: "Window & Pane", description: "Indicates when a pane is zoomed.", kind: "conditional", example: "ZOOM" },
+  { key: "window_activity", insert: "#{?window_activity_flag,●,}", label: "Tab activity?", category: "Window & Pane", description: "Marks ● when there was recent activity in the window.", kind: "conditional", example: "●" },
+  { key: "window_bell", insert: "#{?window_bell_flag,🔔,}", label: "Tab bell/alert?", category: "Window & Pane", description: "Marks when the window fired an alert (bell).", kind: "conditional", example: "🔔" },
 
   // ---- Host & Sistema ----
-  { key: "host_short", insert: "#h", label: "Nome do computador", category: "Host & Sistema", description: "Hostname sem domínio.", example: "macbook" },
-  { key: "host", insert: "#H", label: "Nome do computador (completo)", category: "Host & Sistema", description: "Hostname completo.", example: "macbook.local" },
-  { key: "user", insert: "#(whoami)", label: "Usuário", category: "Host & Sistema", description: "Usuário atual (via whoami).", kind: "command", example: "user" },
-  { key: "uptime", insert: "#(uptime | sed 's/.*up //; s/,.*//')", label: "Uptime", category: "Host & Sistema", description: "Tempo ligado (script).", kind: "command", example: "3 days" },
-  { key: "load", insert: "#(uptime | sed 's/.*load average: //')", label: "Load average", category: "Host & Sistema", description: "Carga do sistema (script).", kind: "command", example: "1.20 1.10 0.90" },
+  { key: "host_short", insert: "#h", label: "Computer name", category: "Host & System", description: "Hostname without domain.", example: "macbook" },
+  { key: "host", insert: "#H", label: "Computer name (full)", category: "Host & System", description: "Full hostname.", example: "macbook.local" },
+  { key: "user", insert: "#(whoami)", label: "User", category: "Host & System", description: "Current user (via whoami).", kind: "command", example: "user" },
+  { key: "uptime", insert: "#(uptime | sed 's/.*up //; s/,.*//')", label: "Uptime", category: "Host & System", description: "Time powered on (script).", kind: "command", example: "3 days" },
+  { key: "load", insert: "#(uptime | sed 's/.*load average: //')", label: "Load average", category: "Host & System", description: "System load (script).", kind: "command", example: "1.20 1.10 0.90" },
 
   // ---- Data & Hora ----
-  { key: "time_hm", insert: "%H:%M", label: "Relógio (hora:min)", category: "Data & Hora", description: "Hora no formato 24h.", kind: "text", example: "14:35" },
-  { key: "time_hms", insert: "%H:%M:%S", label: "Relógio (com segundos)", category: "Data & Hora", description: "Hora com segundos.", kind: "text", example: "14:35:07" },
-  { key: "date_dmy", insert: "%d/%m/%Y", label: "Data (DD/MM/AAAA)", category: "Data & Hora", description: "Data pt-BR.", kind: "text", example: "14/07/2026" },
-  { key: "date_ymd", insert: "%Y-%m-%d", label: "Data (AAAA-MM-DD)", category: "Data & Hora", description: "Data ISO.", kind: "text", example: "2026-07-14" },
-  { key: "time_12h", insert: "%I:%M %p", label: "Relógio (12h AM/PM)", category: "Data & Hora", description: "Hora no formato 12h com AM/PM.", kind: "text", example: "02:35 PM" },
-  { key: "date_long", insert: "%d de %B", label: "Data por extenso", category: "Data & Hora", description: "Dia e mês por extenso.", kind: "text", example: "14 de julho" },
-  { key: "weekday", insert: "%A", label: "Dia da semana", category: "Data & Hora", description: "Nome do dia.", kind: "text", example: "segunda" },
-  { key: "weekday_short", insert: "%a", label: "Dia da semana (curto)", category: "Data & Hora", description: "Abreviação do dia.", kind: "text", example: "seg" },
+  { key: "time_hm", insert: "%H:%M", label: "Clock (hour:min)", category: "Date & Time", description: "Time in 24h format.", kind: "text", example: "14:35" },
+  { key: "time_hms", insert: "%H:%M:%S", label: "Clock (with seconds)", category: "Date & Time", description: "Time with seconds.", kind: "text", example: "14:35:07" },
+  { key: "date_dmy", insert: "%d/%m/%Y", label: "Date (DD/MM/YYYY)", category: "Date & Time", description: "Day-first date.", kind: "text", example: "14/07/2026" },
+  { key: "date_ymd", insert: "%Y-%m-%d", label: "Date (YYYY-MM-DD)", category: "Date & Time", description: "ISO date.", kind: "text", example: "2026-07-14" },
+  { key: "time_12h", insert: "%I:%M %p", label: "Clock (12h AM/PM)", category: "Date & Time", description: "Time in 12h format with AM/PM.", kind: "text", example: "02:35 PM" },
+  { key: "date_long", insert: "%d de %B", label: "Long date", category: "Date & Time", description: "Day and month spelled out.", kind: "text", example: "14 de julho" },
+  { key: "weekday", insert: "%A", label: "Weekday", category: "Date & Time", description: "Day name.", kind: "text", example: "segunda" },
+  { key: "weekday_short", insert: "%a", label: "Weekday (short)", category: "Date & Time", description: "Day abbreviation.", kind: "text", example: "seg" },
 
   // ---- Git & Projeto ----
-  { key: "git_branch", insert: "#(cd #{pane_current_path}; git rev-parse --abbrev-ref HEAD 2>/dev/null)", label: "Branch git", category: "Git & Projeto", description: "Branch atual do diretório do painel.", kind: "command", example: "main" },
-  { key: "git_dirty", insert: "#(cd #{pane_current_path}; git status --porcelain 2>/dev/null | head -1 | sed 's/.*/±/')", label: "Git sujo?", category: "Git & Projeto", description: "Marca ± se há mudanças não commitadas.", kind: "command", example: "±" },
+  { key: "git_branch", insert: "#(cd #{pane_current_path}; git rev-parse --abbrev-ref HEAD 2>/dev/null)", label: "git branch", category: "Git & Project", description: "Current branch of the pane's directory.", kind: "command", example: "main" },
+  { key: "git_dirty", insert: "#(cd #{pane_current_path}; git status --porcelain 2>/dev/null | head -1 | sed 's/.*/±/')", label: "git dirty?", category: "Git & Project", description: "Marks ± if there are uncommitted changes.", kind: "command", example: "±" },
 
   // ---- Condicionais & Estado ----
-  { key: "cond_generic", insert: "#{?condição,verdadeiro,falso}", label: "Condicional #{?...}", category: "Condicionais & Estado", description: "Bloco condicional do tmux — edite a condição e os dois valores.", kind: "conditional" },
+  { key: "cond_generic", insert: "#{?condição,verdadeiro,falso}", label: "Conditional #{?...}", category: "Conditionals & State", description: "tmux conditional block — edit the condition and the two values.", kind: "conditional" },
 
   // ---- Texto & Separadores ----
-  { key: "text", insert: " texto ", label: "Texto livre", category: "Texto & Separadores", description: "Texto literal (edite à vontade).", kind: "text", example: "texto" },
-  { key: "space", insert: " ", label: "Espaço", category: "Texto & Separadores", description: "Um espaço.", kind: "text" },
-  { key: "dot", insert: " · ", label: "Ponto médio (·)", category: "Texto & Separadores", description: "Separador visual.", kind: "text", example: "·" },
-  { key: "pipe", insert: " | ", label: "Barra (|)", category: "Texto & Separadores", description: "Separador em barra.", kind: "text", example: "|" },
-  { key: "pl_right", insert: "", label: "Powerline ", category: "Texto & Separadores", description: "Separador powerline à direita (Nerd Font).", kind: "text", example: "" },
-  { key: "pl_left", insert: "", label: "Powerline ", category: "Texto & Separadores", description: "Separador powerline à esquerda (Nerd Font).", kind: "text", example: "" },
-  { key: "pl_round_r", insert: "", label: "Powerline ", category: "Texto & Separadores", description: "Separador redondo à direita.", kind: "text", example: "" },
-  { key: "pl_round_l", insert: "", label: "Powerline ", category: "Texto & Separadores", description: "Separador redondo à esquerda.", kind: "text", example: "" },
+  { key: "text", insert: " texto ", label: "Free text", category: "Text & Separators", description: "Literal text (edit freely).", kind: "text", example: "texto" },
+  { key: "space", insert: " ", label: "Space", category: "Text & Separators", description: "A space.", kind: "text" },
+  { key: "dot", insert: " · ", label: "Middle dot (·)", category: "Text & Separators", description: "Visual separator.", kind: "text", example: "·" },
+  { key: "pipe", insert: " | ", label: "Pipe (|)", category: "Text & Separators", description: "Pipe separator.", kind: "text", example: "|" },
+  { key: "pl_right", insert: "", label: "Powerline ", category: "Text & Separators", description: "Right powerline separator (Nerd Font).", kind: "text", example: "" },
+  { key: "pl_left", insert: "", label: "Powerline ", category: "Text & Separators", description: "Left powerline separator (Nerd Font).", kind: "text", example: "" },
+  { key: "pl_round_r", insert: "", label: "Powerline ", category: "Text & Separators", description: "Round separator on the right.", kind: "text", example: "" },
+  { key: "pl_round_l", insert: "", label: "Powerline ", category: "Text & Separators", description: "Round separator on the left.", kind: "text", example: "" },
 
   // ---- Ícones (Nerd Font) — requer uma Nerd Font instalada no terminal ----
-  { key: "ic_folder", insert: "", label: "Ícone: pasta", category: "Ícones (Nerd Font)", description: "Ícone de pasta (combina com 'Pasta atual').", kind: "text", example: "" },
-  { key: "ic_git", insert: "", label: "Ícone: git", category: "Ícones (Nerd Font)", description: "Ícone do git (combina com 'Branch git').", kind: "text", example: "" },
-  { key: "ic_branch", insert: "", label: "Ícone: branch", category: "Ícones (Nerd Font)", description: "Ícone de ramo/branch.", kind: "text", example: "" },
-  { key: "ic_clock", insert: "", label: "Ícone: relógio", category: "Ícones (Nerd Font)", description: "Ícone de relógio (combina com o horário).", kind: "text", example: "" },
-  { key: "ic_calendar", insert: "", label: "Ícone: calendário", category: "Ícones (Nerd Font)", description: "Ícone de calendário (combina com a data).", kind: "text", example: "" },
-  { key: "ic_apple", insert: "", label: "Ícone: maçã (macOS)", category: "Ícones (Nerd Font)", description: "Logo da Apple.", kind: "text", example: "" },
-  { key: "ic_linux", insert: "", label: "Ícone: Linux", category: "Ícones (Nerd Font)", description: "Pinguim do Linux.", kind: "text", example: "" },
-  { key: "ic_host", insert: "", label: "Ícone: computador", category: "Ícones (Nerd Font)", description: "Ícone de computador/notebook.", kind: "text", example: "" },
-  { key: "ic_server", insert: "", label: "Ícone: servidor", category: "Ícones (Nerd Font)", description: "Ícone de servidor.", kind: "text", example: "" },
-  { key: "ic_user", insert: "", label: "Ícone: usuário", category: "Ícones (Nerd Font)", description: "Ícone de pessoa/usuário.", kind: "text", example: "" },
-  { key: "ic_battery", insert: "", label: "Ícone: bateria", category: "Ícones (Nerd Font)", description: "Ícone de bateria (combina com o widget de bateria).", kind: "text", example: "" },
-  { key: "ic_cpu", insert: "", label: "Ícone: CPU", category: "Ícones (Nerd Font)", description: "Ícone de processador.", kind: "text", example: "" },
-  { key: "ic_bolt", insert: "", label: "Ícone: raio", category: "Ícones (Nerd Font)", description: "Ícone de raio/energia.", kind: "text", example: "" },
-  { key: "ic_star", insert: "", label: "Ícone: estrela", category: "Ícones (Nerd Font)", description: "Estrela.", kind: "text", example: "" },
-  { key: "ic_circle", insert: "", label: "Ícone: bolinha", category: "Ícones (Nerd Font)", description: "Bolinha cheia (bom para status).", kind: "text", example: "" },
+  { key: "ic_folder", insert: "", label: "Icon: folder", category: "Icons (Nerd Font)", description: "Folder icon (pairs with 'Current folder').", kind: "text", example: "" },
+  { key: "ic_git", insert: "", label: "Icon: git", category: "Icons (Nerd Font)", description: "git icon (pairs with 'git branch').", kind: "text", example: "" },
+  { key: "ic_branch", insert: "", label: "Icon: branch", category: "Icons (Nerd Font)", description: "Branch icon.", kind: "text", example: "" },
+  { key: "ic_clock", insert: "", label: "Icon: clock", category: "Icons (Nerd Font)", description: "Clock icon (pairs with the time).", kind: "text", example: "" },
+  { key: "ic_calendar", insert: "", label: "Icon: calendar", category: "Icons (Nerd Font)", description: "Calendar icon (pairs with the date).", kind: "text", example: "" },
+  { key: "ic_apple", insert: "", label: "Icon: apple (macOS)", category: "Icons (Nerd Font)", description: "Apple logo.", kind: "text", example: "" },
+  { key: "ic_linux", insert: "", label: "Icon: Linux", category: "Icons (Nerd Font)", description: "Linux penguin.", kind: "text", example: "" },
+  { key: "ic_host", insert: "", label: "Icon: computer", category: "Icons (Nerd Font)", description: "Computer/laptop icon.", kind: "text", example: "" },
+  { key: "ic_server", insert: "", label: "Icon: server", category: "Icons (Nerd Font)", description: "Server icon.", kind: "text", example: "" },
+  { key: "ic_user", insert: "", label: "Icon: user", category: "Icons (Nerd Font)", description: "Person/user icon.", kind: "text", example: "" },
+  { key: "ic_battery", insert: "", label: "Icon: battery", category: "Icons (Nerd Font)", description: "Battery icon (pairs with the battery widget).", kind: "text", example: "" },
+  { key: "ic_cpu", insert: "", label: "Icon: CPU", category: "Icons (Nerd Font)", description: "Processor icon.", kind: "text", example: "" },
+  { key: "ic_bolt", insert: "", label: "Icon: bolt", category: "Icons (Nerd Font)", description: "Bolt/power icon.", kind: "text", example: "" },
+  { key: "ic_star", insert: "", label: "Icon: star", category: "Icons (Nerd Font)", description: "Star.", kind: "text", example: "" },
+  { key: "ic_circle", insert: "", label: "Icon: dot", category: "Icons (Nerd Font)", description: "Filled dot (good for status).", kind: "text", example: "" },
 
   // ---- Widgets (scripts) ----
-  { key: "battery", insert: "#(if command -v pmset >/dev/null 2>&1; then pmset -g batt | grep -Eo '[0-9]+%' | head -1; elif [ -r /sys/class/power_supply/BAT0/capacity ]; then echo \"$(cat /sys/class/power_supply/BAT0/capacity)%\"; fi)", label: "Bateria (%)", category: "Widgets (scripts)", description: "Percentual de bateria. Funciona em macOS (pmset) e Linux (/sys). Vazio em desktop sem bateria.", kind: "command", example: "82%" },
-  { key: "cpu", insert: "#(ps -A -o %cpu | awk '{s+=$1} END {printf \"%.0f%%\", s}')", label: "CPU total", category: "Widgets (scripts)", description: "Uso de CPU somado (script).", kind: "command", example: "12%" },
-  { key: "memory_mac", insert: "#(if command -v memory_pressure >/dev/null 2>&1; then memory_pressure | grep -Eo '[0-9]+%' | head -1; elif [ -r /proc/meminfo ]; then awk '/MemAvailable/{a=$2} /MemTotal/{t=$2} END{printf \"%.0f%%\", a/t*100}' /proc/meminfo; fi)", label: "Memória livre (%)", category: "Widgets (scripts)", description: "Percentual de memória disponível. macOS (memory_pressure) e Linux (/proc/meminfo).", kind: "command", example: "64%" },
-  { key: "volume_mac", insert: "#(command -v osascript >/dev/null 2>&1 && osascript -e 'output volume of (get volume settings)')", label: "Volume do sistema (macOS)", category: "Widgets (scripts)", description: "Volume atual (só macOS — usa osascript). Em Linux, deixe vazio ou use um script próprio.", kind: "command", example: "50" },
-  { key: "ip_local", insert: "#(if command -v ipconfig >/dev/null 2>&1; then ipconfig getifaddr en0 2>/dev/null; elif command -v hostname >/dev/null 2>&1; then hostname -I 2>/dev/null | awk '{print $1}'; fi)", label: "IP local", category: "Widgets (scripts)", description: "Endereço IP local. macOS (ipconfig en0) e Linux (hostname -I).", kind: "command", example: "192.168.0.10" },
-  { key: "custom_script", insert: "#(/caminho/do/script.sh)", label: "Script custom #(...)", category: "Widgets (scripts)", description: "Chame qualquer script — a saída vira o conteúdo.", kind: "command" },
+  { key: "battery", insert: "#(if command -v pmset >/dev/null 2>&1; then pmset -g batt | grep -Eo '[0-9]+%' | head -1; elif [ -r /sys/class/power_supply/BAT0/capacity ]; then echo \"$(cat /sys/class/power_supply/BAT0/capacity)%\"; fi)", label: "Battery (%)", category: "Widgets (scripts)", description: "Battery percentage. Works on macOS (pmset) and Linux (/sys). Empty on desktops without a battery.", kind: "command", example: "82%" },
+  { key: "cpu", insert: "#(ps -A -o %cpu | awk '{s+=$1} END {printf \"%.0f%%\", s}')", label: "Total CPU", category: "Widgets (scripts)", description: "Combined CPU usage (script).", kind: "command", example: "12%" },
+  { key: "memory_mac", insert: "#(if command -v memory_pressure >/dev/null 2>&1; then memory_pressure | grep -Eo '[0-9]+%' | head -1; elif [ -r /proc/meminfo ]; then awk '/MemAvailable/{a=$2} /MemTotal/{t=$2} END{printf \"%.0f%%\", a/t*100}' /proc/meminfo; fi)", label: "Free memory (%)", category: "Widgets (scripts)", description: "Available memory percentage. macOS (memory_pressure) and Linux (/proc/meminfo).", kind: "command", example: "64%" },
+  { key: "volume_mac", insert: "#(command -v osascript >/dev/null 2>&1 && osascript -e 'output volume of (get volume settings)')", label: "System volume (macOS)", category: "Widgets (scripts)", description: "Current volume (macOS only — uses osascript). On Linux, leave empty or use your own script.", kind: "command", example: "50" },
+  { key: "ip_local", insert: "#(if command -v ipconfig >/dev/null 2>&1; then ipconfig getifaddr en0 2>/dev/null; elif command -v hostname >/dev/null 2>&1; then hostname -I 2>/dev/null | awk '{print $1}'; fi)", label: "Local IP", category: "Widgets (scripts)", description: "Local IP address. macOS (ipconfig en0) and Linux (hostname -I).", kind: "command", example: "192.168.0.10" },
+  { key: "custom_script", insert: "#(/caminho/do/script.sh)", label: "Custom script #(...)", category: "Widgets (scripts)", description: "Call any script — its output becomes the content.", kind: "command" },
 
   // ---- Prontos ✨ (combos legais, colam e já funcionam) ----
-  { key: "ready_clock", insert: " %H:%M", label: "Relógio com ícone", category: "Prontos ✨ (legais)", description: "Ícone de relógio + hora. Cole no status-right.", kind: "text", example: " 14:35" },
-  { key: "ready_date_clock", insert: " %d/%m   %H:%M", label: "Data + hora com ícones", category: "Prontos ✨ (legais)", description: "Calendário + data e relógio + hora.", kind: "text", example: " 14/07   14:35" },
-  { key: "ready_git", insert: "#(cd #{pane_current_path}; b=$(git rev-parse --abbrev-ref HEAD 2>/dev/null); [ -n \"$b\" ] && echo \"  $b\")", label: "Git: ícone + branch (só se tiver)", category: "Prontos ✨ (legais)", description: "Mostra  branch só quando a pasta é um repositório git.", kind: "command", example: " main" },
-  { key: "ready_git_dirty", insert: "#(cd #{pane_current_path}; b=$(git rev-parse --abbrev-ref HEAD 2>/dev/null); [ -n \"$b\" ] && { d=$(git status --porcelain 2>/dev/null | head -1); echo \"  $b$([ -n \"$d\" ] && echo ' ')\"; })", label: "Git: branch + bolinha se sujo", category: "Prontos ✨ (legais)", description: "Branch com ● quando há mudanças não commitadas.", kind: "command", example: " main " },
-  { key: "ready_battery_icon", insert: "#(p=$(if command -v pmset >/dev/null 2>&1; then pmset -g batt | grep -Eo '[0-9]+' | head -1; elif [ -r /sys/class/power_supply/BAT0/capacity ]; then cat /sys/class/power_supply/BAT0/capacity; fi); if [ -z \"$p\" ]; then echo ''; elif [ \"$p\" -ge 80 ]; then echo \"  $p%\"; elif [ \"$p\" -ge 40 ]; then echo \"  $p%\"; else echo \"  $p%\"; fi)", label: "Bateria: ícone muda com o nível", category: "Prontos ✨ (legais)", description: "Ícone de bateria cheia/média/vazia conforme a carga. macOS e Linux.", kind: "command", example: " 82%" },
-  { key: "ready_battery_charging", insert: "#(p=$(if command -v pmset >/dev/null 2>&1; then pmset -g batt | grep -Eo '[0-9]+' | head -1; elif [ -r /sys/class/power_supply/BAT0/capacity ]; then cat /sys/class/power_supply/BAT0/capacity; fi); chg=$(if command -v pmset >/dev/null 2>&1; then pmset -g batt | grep -q 'AC Power' && echo 1; elif [ -r /sys/class/power_supply/AC/online ]; then [ \"$(cat /sys/class/power_supply/AC/online)\" = 1 ] && echo 1; fi); ic=$([ -n \"$chg\" ] && echo '' || echo ''); [ -n \"$p\" ] && echo \" $ic $p%\")", label: "Bateria: raio quando carregando", category: "Prontos ✨ (legais)", description: "Raio quando na tomada, senão bateria, + %. macOS e Linux.", kind: "command", example: " 82%" },
-  { key: "ready_spotify", insert: " #(osascript -e 'tell application \"Spotify\" to if it is running then (get name of current track) & \" — \" & (get artist of current track)' 2>/dev/null)", label: "Spotify: tocando agora (macOS)", category: "Prontos ✨ (legais)", description: "Nome e artista da música tocando no Spotify. Vazio se fechado.", kind: "command", example: " Song — Artist" },
-  { key: "ready_weather", insert: "#(curl -s 'wttr.in/?format=%t' 2>/dev/null)", label: "Clima (temperatura, wttr.in)", category: "Prontos ✨ (legais)", description: "Temperatura atual pela sua localização (via wttr.in — precisa de internet). Use refresh ~300s.", kind: "command", example: "+21°C" },
-  { key: "ready_weather_full", insert: "#(curl -s 'wttr.in/?format=%c+%t' 2>/dev/null)", label: "Clima (ícone + temperatura)", category: "Prontos ✨ (legais)", description: "Condição + temperatura (wttr.in). Ex.: ☀️ +21°C.", kind: "command", example: "☀️ +21°C" },
-  { key: "ready_docker", insert: "#( c=$(docker ps -q 2>/dev/null | wc -l | tr -d ' '); [ \"$c\" -gt 0 ] && echo \"  $c\")", label: "Docker: nº de containers rodando", category: "Prontos ✨ (legais)", description: "Ícone Docker + quantos containers ativos (some se zero).", kind: "command", example: " 3" },
-  { key: "ready_cpu_icon", insert: " #(ps -A -o %cpu | awk '{s+=$1} END {printf \"%.0f%%\", s}')", label: "CPU com ícone", category: "Prontos ✨ (legais)", description: "Ícone de processador + uso total de CPU.", kind: "command", example: " 12%" },
-  { key: "ready_net", insert: "#(ip=$(if command -v ipconfig >/dev/null 2>&1; then ipconfig getifaddr en0 2>/dev/null; else hostname -I 2>/dev/null | awk '{print $1}'; fi); [ -n \"$ip\" ] && echo \" $ip\")", label: "IP local com ícone", category: "Prontos ✨ (legais)", description: "Ícone de rede + IP local. macOS ou Linux. Some se não achar.", kind: "command", example: " 192.168.0.10" },
-  { key: "ready_prefix", insert: "#{?client_prefix,#[bg=#fbbf24#,fg=#15161A#,bold] PREFIX #[default],}", label: "Aviso de PREFIX ativo (colorido)", category: "Prontos ✨ (legais)", description: "Mostra um selo amarelo 'PREFIX' quando você aperta o prefixo (C-b).", kind: "conditional", example: " PREFIX " },
+  { key: "ready_clock", insert: " %H:%M", label: "Clock with icon", category: "Ready-made ✨ (cool)", description: "Clock icon + time. Paste into status-right.", kind: "text", example: " 14:35" },
+  { key: "ready_date_clock", insert: " %d/%m   %H:%M", label: "Date + time with icons", category: "Ready-made ✨ (cool)", description: "Calendar + date and clock + time.", kind: "text", example: " 14/07   14:35" },
+  { key: "ready_git", insert: "#(cd #{pane_current_path}; b=$(git rev-parse --abbrev-ref HEAD 2>/dev/null); [ -n \"$b\" ] && echo \"  $b\")", label: "Git: icon + branch (only if present)", category: "Ready-made ✨ (cool)", description: "Shows  branch only when the folder is a git repository.", kind: "command", example: " main" },
+  { key: "ready_git_dirty", insert: "#(cd #{pane_current_path}; b=$(git rev-parse --abbrev-ref HEAD 2>/dev/null); [ -n \"$b\" ] && { d=$(git status --porcelain 2>/dev/null | head -1); echo \"  $b$([ -n \"$d\" ] && echo ' ')\"; })", label: "Git: branch + dot if dirty", category: "Ready-made ✨ (cool)", description: "Branch with ● when there are uncommitted changes.", kind: "command", example: " main " },
+  { key: "ready_battery_icon", insert: "#(p=$(if command -v pmset >/dev/null 2>&1; then pmset -g batt | grep -Eo '[0-9]+' | head -1; elif [ -r /sys/class/power_supply/BAT0/capacity ]; then cat /sys/class/power_supply/BAT0/capacity; fi); if [ -z \"$p\" ]; then echo ''; elif [ \"$p\" -ge 80 ]; then echo \"  $p%\"; elif [ \"$p\" -ge 40 ]; then echo \"  $p%\"; else echo \"  $p%\"; fi)", label: "Battery: icon changes with level", category: "Ready-made ✨ (cool)", description: "Full/medium/empty battery icon based on charge. macOS and Linux.", kind: "command", example: " 82%" },
+  { key: "ready_battery_charging", insert: "#(p=$(if command -v pmset >/dev/null 2>&1; then pmset -g batt | grep -Eo '[0-9]+' | head -1; elif [ -r /sys/class/power_supply/BAT0/capacity ]; then cat /sys/class/power_supply/BAT0/capacity; fi); chg=$(if command -v pmset >/dev/null 2>&1; then pmset -g batt | grep -q 'AC Power' && echo 1; elif [ -r /sys/class/power_supply/AC/online ]; then [ \"$(cat /sys/class/power_supply/AC/online)\" = 1 ] && echo 1; fi); ic=$([ -n \"$chg\" ] && echo '' || echo ''); [ -n \"$p\" ] && echo \" $ic $p%\")", label: "Battery: bolt when charging", category: "Ready-made ✨ (cool)", description: "Bolt when plugged in, otherwise battery, + %. macOS and Linux.", kind: "command", example: " 82%" },
+  { key: "ready_spotify", insert: " #(osascript -e 'tell application \"Spotify\" to if it is running then (get name of current track) & \" — \" & (get artist of current track)' 2>/dev/null)", label: "Spotify: now playing (macOS)", category: "Ready-made ✨ (cool)", description: "Track and artist playing in Spotify. Empty if closed.", kind: "command", example: " Song — Artist" },
+  { key: "ready_weather", insert: "#(curl -s 'wttr.in/?format=%t' 2>/dev/null)", label: "Weather (temperature, wttr.in)", category: "Ready-made ✨ (cool)", description: "Current temperature for your location (via wttr.in — needs internet). Use refresh ~300s.", kind: "command", example: "+21°C" },
+  { key: "ready_weather_full", insert: "#(curl -s 'wttr.in/?format=%c+%t' 2>/dev/null)", label: "Weather (icon + temperature)", category: "Ready-made ✨ (cool)", description: "Condition + temperature (wttr.in). E.g. ☀️ +21°C.", kind: "command", example: "☀️ +21°C" },
+  { key: "ready_docker", insert: "#( c=$(docker ps -q 2>/dev/null | wc -l | tr -d ' '); [ \"$c\" -gt 0 ] && echo \"  $c\")", label: "Docker: running container count", category: "Ready-made ✨ (cool)", description: "Docker icon + how many containers are active (hidden if zero).", kind: "command", example: " 3" },
+  { key: "ready_cpu_icon", insert: " #(ps -A -o %cpu | awk '{s+=$1} END {printf \"%.0f%%\", s}')", label: "CPU with icon", category: "Ready-made ✨ (cool)", description: "Processor icon + total CPU usage.", kind: "command", example: " 12%" },
+  { key: "ready_net", insert: "#(ip=$(if command -v ipconfig >/dev/null 2>&1; then ipconfig getifaddr en0 2>/dev/null; else hostname -I 2>/dev/null | awk '{print $1}'; fi); [ -n \"$ip\" ] && echo \" $ip\")", label: "Local IP with icon", category: "Ready-made ✨ (cool)", description: "Network icon + local IP. macOS or Linux. Hidden if not found.", kind: "command", example: " 192.168.0.10" },
+  { key: "ready_prefix", insert: "#{?client_prefix,#[bg=#fbbf24#,fg=#15161A#,bold] PREFIX #[default],}", label: "PREFIX active warning (colored)", category: "Ready-made ✨ (cool)", description: "Shows a yellow 'PREFIX' badge when you press the prefix (C-b).", kind: "conditional", example: " PREFIX " },
 
   // ---- Dev: Claude Code & Ghostty 󰚩 (funciona no seu setup: tmux + Claude Code + tmux-agent-indicator) ----
-  { key: "cc_agent_tab", insert: "#(b=\"\"; for p in $(tmux list-panes -t \"#{window_index}\" -F \"##{pane_id}\" 2>/dev/null); do s=$(tmux show-environment -g \"TMUX_AGENT_PANE_${p}_STATE\" 2>/dev/null | cut -d= -f2); if [ \"$s\" = needs-input ] || [ \"$s\" = needs_input ]; then b=n; elif [ \"$s\" = running ] && [ \"$b\" != n ]; then b=r; fi; done; [ \"$b\" = r ] && printf \" \"; [ \"$b\" = n ] && printf \" \")", label: "Ícone do agente NA ABA (varre a janela)", category: "Dev: Claude Code & Ghostty 󰚩", description: "Para as abas: mostra  (trabalhando) ou  (precisa de você) se QUALQUER painel da janela tem Claude ativo (varre todos os panes). Some SEM deixar espaço quando não há agente. Cole em 'abas (outras)' e 'aba atual'.", kind: "command", example: "" },
-  { key: "cc_running_here", insert: "#{?#{m:*claude*,#{pane_current_command}}},󰚩,}", label: "Ícone 󰚩 se Claude roda neste painel", category: "Dev: Claude Code & Ghostty 󰚩", description: "Mostra só 󰚩 quando o painel atual é o Claude Code (nada se não for).", kind: "conditional", example: "󰚩" },
-  { key: "cc_agent_state", insert: "#(tmux show-environment -g \"TMUX_AGENT_PANE_#{pane_id}_STATE\" 2>/dev/null | cut -d= -f2)", label: "Estado do agente neste painel", category: "Dev: Claude Code & Ghostty 󰚩", description: "running / needs-input / done — lido do tmux-agent-indicator para o painel atual.", kind: "command", example: "running" },
-  { key: "cc_agent_badge", insert: "#(s=$(tmux show-environment -g \"TMUX_AGENT_PANE_#{pane_id}_STATE\" 2>/dev/null | cut -d= -f2); if [ \"$s\" = running ]; then printf \"\"; elif [ \"$s\" = needs-input ] || [ \"$s\" = needs_input ]; then printf \"\"; elif [ -n \"$s\" ]; then printf \"\"; fi)", label: "Ícone do agente (só ícone)", category: "Dev: Claude Code & Ghostty 󰚩", description: "Só o ícone conforme o estado do Claude Code (Nerd Font):  trabalhando ·  precisa de você ·  pronto.", kind: "command", example: "" },
-  { key: "cc_agent_count", insert: "#(tmux show-environment -g 2>/dev/null | grep -c '_STATE=running')", label: "Nº de agentes Claude ativos (todas as abas)", category: "Dev: Claude Code & Ghostty 󰚩", description: "Quantos painéis têm um agente Claude Code trabalhando agora.", kind: "command", example: "3" },
-  { key: "cc_version", insert: "󰚩 #(command -v claude >/dev/null 2>&1 && claude --version 2>/dev/null | grep -Eo '[0-9]+\.[0-9]+\.[0-9]+')", label: "Versão do Claude Code", category: "Dev: Claude Code & Ghostty 󰚩", description: "Ícone + versão do Claude Code CLI instalado.", kind: "command", example: "󰚩 2.1.210" },
-  { key: "cc_any_working", insert: "#(n=$(tmux show-environment -g 2>/dev/null | grep -c '_STATE=running'); [ \"$n\" -gt 0 ] && echo \"󰚩$n\")", label: "󰚩N agentes ativos (só ícone+nº)", category: "Dev: Claude Code & Ghostty 󰚩", description: "Some se não há agente; senão 󰚩 + quantos rodando (ex.: 󰚩3).", kind: "command", example: "󰚩3" },
-  { key: "term_program", insert: "#{client_termname}", label: "Terminal em uso (termname)", category: "Dev: Claude Code & Ghostty 󰚩", description: "Nome do terminal do cliente (ex.: xterm-ghostty / tmux-256color).", kind: "format", example: "xterm-ghostty" },
-  { key: "ghostty_version", insert: "👻 #(command -v ghostty >/dev/null 2>&1 && ghostty --version 2>/dev/null | head -1 | grep -Eo '[0-9]+\.[0-9]+\.[0-9]+')", label: "Versão do Ghostty", category: "Dev: Claude Code & Ghostty 󰚩", description: "Ícone + versão do Ghostty (precisa do binário ghostty no PATH).", kind: "command", example: "👻 1.3.1" },
+  { key: "cc_agent_tab", insert: "#(b=\"\"; for p in $(tmux list-panes -t \"#{window_index}\" -F \"##{pane_id}\" 2>/dev/null); do s=$(tmux show-environment -g \"TMUX_AGENT_PANE_${p}_STATE\" 2>/dev/null | cut -d= -f2); if [ \"$s\" = needs-input ] || [ \"$s\" = needs_input ]; then b=n; elif [ \"$s\" = running ] && [ \"$b\" != n ]; then b=r; fi; done; [ \"$b\" = r ] && printf \" \"; [ \"$b\" = n ] && printf \" \")", label: "Agent icon ON THE TAB (scans the window)", category: "Dev: Claude Code & Ghostty 󰚩", description: "For tabs: shows  (working) or  (needs you) if ANY pane in the window has an active Claude (scans all panes). Disappears WITHOUT leaving a gap when there's no agent. Paste into 'tabs (others)' and 'current tab'.", kind: "command", example: "" },
+  { key: "cc_running_here", insert: "#{?#{m:*claude*,#{pane_current_command}}},󰚩,}", label: "󰚩 icon if Claude runs in this pane", category: "Dev: Claude Code & Ghostty 󰚩", description: "Shows 󰚩 only when the current pane is Claude Code (nothing otherwise).", kind: "conditional", example: "󰚩" },
+  { key: "cc_agent_state", insert: "#(tmux show-environment -g \"TMUX_AGENT_PANE_#{pane_id}_STATE\" 2>/dev/null | cut -d= -f2)", label: "Agent state in this pane", category: "Dev: Claude Code & Ghostty 󰚩", description: "running / needs-input / done — read from tmux-agent-indicator for the current pane.", kind: "command", example: "running" },
+  { key: "cc_agent_badge", insert: "#(s=$(tmux show-environment -g \"TMUX_AGENT_PANE_#{pane_id}_STATE\" 2>/dev/null | cut -d= -f2); if [ \"$s\" = running ]; then printf \"\"; elif [ \"$s\" = needs-input ] || [ \"$s\" = needs_input ]; then printf \"\"; elif [ -n \"$s\" ]; then printf \"\"; fi)", label: "Agent icon (icon only)", category: "Dev: Claude Code & Ghostty 󰚩", description: "Just the icon based on Claude Code's state (Nerd Font):  working ·  needs you ·  ready.", kind: "command", example: "" },
+  { key: "cc_agent_count", insert: "#(tmux show-environment -g 2>/dev/null | grep -c '_STATE=running')", label: "Active Claude agents (all tabs)", category: "Dev: Claude Code & Ghostty 󰚩", description: "How many panes have a Claude Code agent working right now.", kind: "command", example: "3" },
+  { key: "cc_version", insert: "󰚩 #(command -v claude >/dev/null 2>&1 && claude --version 2>/dev/null | grep -Eo '[0-9]+\.[0-9]+\.[0-9]+')", label: "Claude Code version", category: "Dev: Claude Code & Ghostty 󰚩", description: "Icon + version of the installed Claude Code CLI.", kind: "command", example: "󰚩 2.1.210" },
+  { key: "cc_any_working", insert: "#(n=$(tmux show-environment -g 2>/dev/null | grep -c '_STATE=running'); [ \"$n\" -gt 0 ] && echo \"󰚩$n\")", label: "󰚩N active agents (icon+count only)", category: "Dev: Claude Code & Ghostty 󰚩", description: "Hidden if no agent; otherwise 󰚩 + how many running (e.g. 󰚩3).", kind: "command", example: "󰚩3" },
+  { key: "term_program", insert: "#{client_termname}", label: "Terminal in use (termname)", category: "Dev: Claude Code & Ghostty 󰚩", description: "Client terminal name (e.g. xterm-ghostty / tmux-256color).", kind: "format", example: "xterm-ghostty" },
+  { key: "ghostty_version", insert: "👻 #(command -v ghostty >/dev/null 2>&1 && ghostty --version 2>/dev/null | head -1 | grep -Eo '[0-9]+\.[0-9]+\.[0-9]+')", label: "Ghostty version", category: "Dev: Claude Code & Ghostty 󰚩", description: "Icon + Ghostty version (needs the ghostty binary in PATH).", kind: "command", example: "👻 1.3.1" },
 ];
 
 export const CATALOG_CATEGORIES: CatalogCategory[] = [
-  "Sessão & Cliente",
-  "Janela & Painel",
-  "Host & Sistema",
-  "Data & Hora",
-  "Git & Projeto",
-  "Condicionais & Estado",
-  "Texto & Separadores",
-  "Ícones (Nerd Font)",
+  "Session & Client",
+  "Window & Pane",
+  "Host & System",
+  "Date & Time",
+  "Git & Project",
+  "Conditionals & State",
+  "Text & Separators",
+  "Icons (Nerd Font)",
   "Widgets (scripts)",
-  "Prontos ✨ (legais)",
+  "Ready-made ✨ (cool)",
   "Dev: Claude Code & Ghostty 󰚩",
 ];
 
@@ -169,4 +169,24 @@ export function catalogGrouped(): { category: CatalogCategory; items: CatalogIte
     category,
     items: CATALOG.filter((c) => c.category === category),
   })).filter((g) => g.items.length > 0);
+}
+
+// ---- i18n do catálogo: label/descrição/categoria no idioma ativo (inglês é o default) ----
+import { getLang } from "./i18n.js";
+import { CATALOG_PT, CATEGORY_PT } from "./catalog-i18n.js";
+
+/** Label do item no idioma ativo (fallback: inglês do próprio catálogo). */
+export function itemLabel(item: CatalogItem): string {
+  if (getLang() === "pt") return CATALOG_PT[item.key]?.label ?? item.label;
+  return item.label;
+}
+/** Descrição do item no idioma ativo. */
+export function itemDescription(item: CatalogItem): string {
+  if (getLang() === "pt") return CATALOG_PT[item.key]?.description ?? item.description;
+  return item.description;
+}
+/** Nome da categoria (o catálogo guarda em inglês) traduzido para o idioma ativo. */
+export function categoryLabel(category: string): string {
+  if (getLang() === "pt") return CATEGORY_PT[category] ?? category;
+  return category;
 }

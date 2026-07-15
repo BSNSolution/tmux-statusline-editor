@@ -8,6 +8,7 @@ import { dirname, resolve } from "node:path";
 import { App } from "./ui/App.js";
 import { tmuxAvailable } from "./tmux.js";
 import { findThemeLines, disableThemes, enableThemes, reloadClean } from "./themes-cli.js";
+import { t, setLang, getLang, type Lang } from "@tse/shared";
 
 // scripts/ fica ao lado do dist/ (cli/scripts/). __dirname = cli/dist.
 const HERE = dirname(fileURLToPath(import.meta.url));
@@ -16,14 +17,20 @@ function script(name: string): string { return resolve(SCRIPTS, name); }
 
 async function run() {
   const argv = process.argv.slice(2);
-  const cmd = argv[0];
 
-  if (argv.includes("--version") || argv.includes("-v")) {
+  // --lang en|pt força o idioma (senão detecta do sistema; padrão inglês)
+  const langIdx = argv.findIndex((a) => a === "--lang");
+  if (langIdx >= 0 && argv[langIdx + 1]) setLang(argv[langIdx + 1] as Lang);
+  const argvClean = argv.filter((a, i) => a !== "--lang" && i !== langIdx + 1);
+  const cmd = argvClean[0];
+
+  if (argvClean.includes("--version") || argvClean.includes("-v")) {
     console.log("tmux-statusline 0.1.0");
     return;
   }
-  if (argv.includes("--help") || argv.includes("-h") || cmd === "help") {
-    console.log(`tmux-statusline — editor visual da statusline do tmux
+  if (argvClean.includes("--help") || argvClean.includes("-h") || cmd === "help") {
+    const help = getLang() === "pt"
+      ? `${t("cli.desc")}
 
 Uso:
   tmux-statusline               abre o editor (TUI)
@@ -32,11 +39,28 @@ Uso:
   tmux-statusline agent-tabs    liga o indicador do Claude Code nas abas (daemon)
   tmux-statusline agent-tabs stop   desliga o daemon
   tmux-statusline --list-themes / --disable-themes / --enable-themes
+  tmux-statusline --lang en|pt  força o idioma (padrão: idioma do sistema, senão inglês)
   tmux-statusline --version · --help
 
 Teclas no editor: setas navegam · , / . (ou Shift+↑/↓) movem o item · a adiciona · d duplica ·
   r remove · l limpa cores · e edita (biblioteca buscável) · Enter aplica · Tab troca de aba · q sai.
-`);
+`
+      : `${t("cli.desc")}
+
+Usage:
+  tmux-statusline               open the editor (TUI)
+  tmux-statusline doctor        check dependencies (tmux, node, Nerd Font, plugin…)
+  tmux-statusline doctor --fix  install what's missing (macOS/Linux)
+  tmux-statusline agent-tabs    turn on the Claude Code indicator in tabs (daemon)
+  tmux-statusline agent-tabs stop   turn off the daemon
+  tmux-statusline --list-themes / --disable-themes / --enable-themes
+  tmux-statusline --lang en|pt  force the language (default: system language, else English)
+  tmux-statusline --version · --help
+
+Editor keys: arrows navigate · , / . (or Shift+↑/↓) move the item · a add · d duplicate ·
+  r remove · l clear colors · e edit (searchable library) · Enter apply · Tab switch tab · q quit.
+`;
+    console.log(help);
     return;
   }
 
@@ -49,49 +73,55 @@ Teclas no editor: setas navegam · , / . (ou Shift+↑/↓) movem o item · a ad
 
   // --- agent-tabs: liga/desliga o daemon do indicador do Claude nas abas ---
   if (cmd === "agent-tabs") {
-    const sub = argv[1];
+    const sub = argvClean[1];
     if (sub === "stop") {
       spawnSync("pkill", ["-f", "agent-tabs-daemon.sh"], { stdio: "ignore" });
-      console.log("✓ indicador do Claude nas abas: desligado.");
+      console.log(t("agentTabs.off"));
       return;
     }
-    // liga em background (destacado do processo atual)
     spawnSync("pkill", ["-f", "agent-tabs-daemon.sh"], { stdio: "ignore" });
     const child = spawn("sh", [script("agent-tabs-daemon.sh"), sub ?? "2"], {
       detached: true, stdio: "ignore",
     });
     child.unref();
-    console.log("✓ indicador do Claude nas abas: ligado (daemon em background).");
-    console.log("  adicione #{@agent_icon} no seu window-status-format para ver o ícone.");
-    console.log("  desligar: tmux-statusline agent-tabs stop");
+    console.log(t("agentTabs.on"));
+    console.log(t("agentTabs.hint"));
+    console.log(t("agentTabs.off.hint"));
     return;
   }
 
   // --- gestão de temas por linha de comando (sem TUI) ---
-  if (argv.includes("--list-themes")) {
+  const pt = getLang() === "pt";
+  if (argvClean.includes("--list-themes")) {
     const lines = findThemeLines();
-    if (lines.length === 0) { console.log("Nenhum tema de statusline ativo no ~/.tmux.conf."); return; }
-    console.log("Temas/plugins de statusline ATIVOS:");
+    if (lines.length === 0) { console.log(pt ? "Nenhum tema de statusline ativo no ~/.tmux.conf." : "No active status-line theme in ~/.tmux.conf."); return; }
+    console.log(pt ? "Temas/plugins de statusline ATIVOS:" : "ACTIVE status-line themes/plugins:");
     for (const l of lines) console.log(`  L${l.n}: ${l.text}`);
     return;
   }
-  if (argv.includes("--disable-themes")) {
+  if (argvClean.includes("--disable-themes")) {
     const { disabled, backupFile } = disableThemes();
     console.log(disabled > 0
-      ? `✓ ${disabled} linha(s) de tema desativadas e salvas em:\n  ${backupFile}\n  (reative com: tmux-statusline --enable-themes)`
-      : "Nenhum tema para desativar.");
-    const msg = await reloadClean({ hard: argv.includes("--hard") });
+      ? (pt
+          ? `✓ ${disabled} linha(s) de tema desativadas e salvas em:\n  ${backupFile}\n  (reative com: tmux-statusline --enable-themes)`
+          : `✓ ${disabled} theme line(s) disabled and saved to:\n  ${backupFile}\n  (re-enable with: tmux-statusline --enable-themes)`)
+      : (pt ? "Nenhum tema para desativar." : "No theme to disable."));
+    const msg = await reloadClean({ hard: argvClean.includes("--hard") });
     console.log("  " + msg);
     return;
   }
-  if (argv.includes("--enable-themes")) {
+  if (argvClean.includes("--enable-themes")) {
     const n = enableThemes();
-    console.log(n > 0 ? `✓ ${n} linha(s) de tema reativadas no ~/.tmux.conf. Recarregue o tmux (prefixo + r ou reinicie).` : "Nenhum tema desativado para reativar.");
+    console.log(n > 0
+      ? (pt
+          ? `✓ ${n} linha(s) de tema reativadas no ~/.tmux.conf. Recarregue o tmux (prefixo + r ou reinicie).`
+          : `✓ ${n} theme line(s) re-enabled in ~/.tmux.conf. Reload tmux (prefix + r or restart).`)
+      : (pt ? "Nenhum tema desativado para reativar." : "No disabled theme to re-enable."));
     return;
   }
 
   if (!(await tmuxAvailable())) {
-    console.error("⚠️  tmux não encontrado no PATH. Instale o tmux antes de usar.");
+    console.error(t("cli.tmuxMissing"));
     process.exit(1);
   }
 

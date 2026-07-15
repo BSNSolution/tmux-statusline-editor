@@ -21,7 +21,9 @@ async function run() {
   // --lang en|pt força o idioma (senão detecta do sistema; padrão inglês)
   const langIdx = argv.findIndex((a) => a === "--lang");
   if (langIdx >= 0 && argv[langIdx + 1]) setLang(argv[langIdx + 1] as Lang);
-  const argvClean = argv.filter((a, i) => a !== "--lang" && i !== langIdx + 1);
+  // remove "--lang" e seu valor; sem --lang, langIdx=-1 e nada é removido indevidamente
+  const langValIdx = langIdx >= 0 ? langIdx + 1 : -1;
+  const argvClean = argv.filter((a, i) => a !== "--lang" && i !== langValIdx);
   const cmd = argvClean[0];
 
   if (argvClean.includes("--version") || argvClean.includes("-v")) {
@@ -74,6 +76,19 @@ Editor keys: arrows navigate · , / . (or Shift+↑/↓) move the item · a add 
   // --- agent-tabs: liga/desliga o daemon do indicador do Claude nas abas ---
   if (cmd === "agent-tabs") {
     const sub = argvClean[1];
+    // instala/remove os hooks do Claude Code (estado preciso por painel)
+    if (argvClean.includes("--install-hooks")) {
+      const r = spawnSync("python3", [script("install-hooks.py"), script("agent-hook.sh"), "install"], { stdio: "inherit" });
+      process.exit(r.status ?? 0);
+    }
+    if (argvClean.includes("--uninstall-hooks")) {
+      const r = spawnSync("python3", [script("install-hooks.py"), script("agent-hook.sh"), "uninstall"], { stdio: "inherit" });
+      process.exit(r.status ?? 0);
+    }
+    if (argvClean.includes("--hooks-status")) {
+      const r = spawnSync("python3", [script("install-hooks.py"), script("agent-hook.sh"), "status"], { stdio: "inherit" });
+      process.exit(r.status ?? 0);
+    }
     if (sub === "stop") {
       spawnSync("pkill", ["-f", "agent-tabs-daemon.sh"], { stdio: "ignore" });
       console.log(t("agentTabs.off"));

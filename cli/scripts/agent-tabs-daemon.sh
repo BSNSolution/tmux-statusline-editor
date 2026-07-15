@@ -52,6 +52,25 @@ BUSY_HOLD="${BUSY_HOLD:-4}"
 
 now() { date +%s; }
 
+# Diretório onde os hooks do Claude Code gravam o estado preciso por painel (agent-hook.sh).
+STATE_DIR="${TSE_STATE_DIR:-$HOME/.cache/tmux-statusline}"
+# Idade máxima (seg) de um estado de hook para ainda ser confiável. Se o Claude travou/morreu sem
+# disparar Stop, o estado "working" velho expira e caímos no fallback por CPU.
+HOOK_TTL="${HOOK_TTL:-900}"
+
+# Estado PRECISO do painel a partir do arquivo do hook. Retorna: working|idle|needs|"" (sem info).
+pane_hook_state() {
+  pane="$1"
+  safe=$(printf '%s' "$pane" | tr -cd '0-9A-Za-z_')
+  f="$STATE_DIR/pane-$safe.state"
+  [ -r "$f" ] || { printf ''; return; }
+  read -r st ts _ < "$f" 2>/dev/null || { printf ''; return; }
+  [ -n "${st:-}" ] || { printf ''; return; }
+  # expira estados antigos (proteção contra Claude que morreu sem Stop)
+  if [ -n "${ts:-}" ] && [ "$(( $(now) - ts ))" -gt "$HOOK_TTL" ]; then printf ''; return; fi
+  printf '%s' "$st"
+}
+
 # CPU% somada dos processos de agente no pane. "" se não há agente vivo no pane.
 pane_agent_cpu() {
   pane="$1"
@@ -74,28 +93,34 @@ pane_is_busy() {
 }
 
 # Estado efetivo de UM pane. Retorna: run | needs | "".
-# HIERARQUIA (nesta ordem):
-#   1) TRABALHANDO (CPU) vence tudo. Se o agente está processando, NÃO está travado esperando você —
-#      mostra ⚙ e LIMPA qualquer needs zumbi. Com histerese (BUSY_HOLD) p/ não piscar nas quedas de CPU.
-#   2) Se não está trabalhando, então NEEDS-INPUT recente (do environment, com TTL) → 🔔.
-#   3) Senão, ocioso/sem agente → sem ícone.
+# FONTE PRIMÁRIA: os HOOKS do Claude Code (agent-hook.sh grava working/idle/needs por pane) — sinal
+# DIRETO e preciso do próprio Claude. Só se não houver estado de hook (ex.: outro agente sem hooks,
+# ou hooks não instalados) caímos no FALLBACK por CPU.
 pane_effective_state() {
   pane="$1"
 
-  # 1) TRABALHANDO? (CPU acima do limiar, com histerese)
+  # ===== 1) FONTE PRECISA: estado do hook =====
+  hs=$(pane_hook_state "$pane")
+  case "$hs" in
+    needs)    printf 'needs'; return ;;
+    working)  printf 'run';   return ;;
+    idle)     printf '';      return ;;   # terminou: sem ícone (preciso, sem histerese)
+    # "" (sem info de hook) → cai no fallback por CPU abaixo
+  esac
+
+  # ===== 2) FALLBACK: detecção por CPU (para agentes sem hooks instalados) =====
   if pane_is_busy "$pane"; then
     tmux_cmd set-environment -g "TSE_BUSY_AT_${pane}" "$(now)" 2>/dev/null || true
-    # está trabalhando → não pode estar esperando você: limpa needs zumbi
     tmux_cmd set-environment -gu "TSE_NEEDS_AT_${pane}" 2>/dev/null || true
     printf 'run'; return
   fi
   bat=$(tmux_cmd show-environment -g "TSE_BUSY_AT_${pane}" 2>/dev/null | cut -d= -f2)
   if [ -n "$bat" ] && [ "$(( $(now) - bat ))" -le "$BUSY_HOLD" ]; then
-    printf 'run'; return   # dentro da histerese: mantém ⚙ mesmo com CPU baixa momentânea
+    printf 'run'; return
   fi
   tmux_cmd set-environment -gu "TSE_BUSY_AT_${pane}" 2>/dev/null || true
 
-  # 2) NEEDS-INPUT recente? (só quando NÃO está trabalhando)
+  # needs-input do environment (agent-indicator), como último recurso
   s=$(tmux_cmd show-environment -g "TMUX_AGENT_PANE_${pane}_STATE" 2>/dev/null | cut -d= -f2)
   case "$s" in
     needs-input|needs_input)
@@ -109,7 +134,6 @@ pane_effective_state() {
       tmux_cmd set-environment -gu "TSE_NEEDS_AT_${pane}" 2>/dev/null || true ;;
   esac
 
-  # 3) ocioso / sem agente
   printf ''
 }
 

@@ -40,13 +40,15 @@ NEEDS_TTL="${NEEDS_TTL:-90}"
 ICON_NEEDS="${ICON_NEEDS:- $(printf '\357\203\263')}"
 ICON_RUN="${ICON_RUN:- $(printf '\357\200\223')}"
 AGENT_PROCS="${AGENT_PROCS:-claude,codex,aider,cursor,opencode}"
-# CPU (%) acima da qual consideramos o agente "trabalhando de verdade". Abaixo disso, o processo
-# claude está vivo mas OCIOSO (esperando você) → não mostra ⚙. Ajuste com CPU_BUSY.
-CPU_BUSY="${CPU_BUSY:-5}"
-# HISTERESE: a CPU oscila (sobe/desce a cada leitura mesmo trabalhando). Uma vez detectado "busy",
-# seguramos o ⚙ por BUSY_HOLD segundos após a ÚLTIMA leitura acima do limiar — assim o ícone não
-# fica piscando nas quedas momentâneas de CPU. Só apaga quando fica ocioso de verdade por esse tempo.
-BUSY_HOLD="${BUSY_HOLD:-12}"
+# CPU (%) acima da qual consideramos o agente "trabalhando de verdade". Medições reais mostram uma
+# separação NÍTIDA: Claude trabalhando fica sempre alto (11–67%), Claude ocioso/esperando fica sempre
+# baixo (0–3%, com raros picos ao renderizar a resposta final). O limiar 10% separa os dois com folga
+# — o pico de ~3% ao TERMINAR não passa, então o ⚙ não fica preso depois que o agente acaba.
+CPU_BUSY="${CPU_BUSY:-10}"
+# HISTERESE CURTA: só para não piscar numa eventual leitura baixa no meio de trabalho contínuo.
+# Curta de propósito (2 sweeps): com o limiar bem escolhido, o "acabou" cai abaixo do limiar e o ícone
+# some rápido — não segura o ⚙ por muito tempo depois que o Claude termina.
+BUSY_HOLD="${BUSY_HOLD:-4}"
 
 now() { date +%s; }
 

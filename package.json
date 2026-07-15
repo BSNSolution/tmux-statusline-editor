@@ -1,0 +1,11 @@
+{
+  "name": "tmux-statusline-editor",
+  "private": true,
+  "version": "0.1.0",
+  "description": "Editor visual da statusline do tmux no terminal (TUI) — catálogo de itens, cores, preview fiel, histórico e indicador de agentes de IA. Um tweakcc para o tmux.",
+  "scripts": {
+    "dev": "pnpm --parallel -r dev",
+    "build": "pnpm -r build",
+    "build:strict": "pnpm -r build:strict"
+  }
+}

@@ -1,0 +1,14 @@
+node_modules/
+dist/
+*.tsbuildinfo
+*.log
+.DS_Store
+.env
+.env.*
+
+# planejamento interno da BSN (não vai para o repo público)
+AI/
+
+# artefatos de sessão do agente
+.claude/
+*.bak

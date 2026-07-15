@@ -1,0 +1,27 @@
+{
+  "name": "@tse/cli",
+  "version": "0.1.0",
+  "private": true,
+  "type": "module",
+  "bin": {
+    "tmux-statusline": "dist/main.js"
+  },
+  "scripts": {
+    "build": "tsc -b",
+    "build:strict": "tsc --noEmit && tsc -b",
+    "dev": "tsc -b --watch",
+    "start": "node dist/main.js"
+  },
+  "dependencies": {
+    "@tse/shared": "workspace:*",
+    "ink": "^5.1.0",
+    "ink-text-input": "^6.0.0",
+    "ink-select-input": "^6.2.0",
+    "react": "^18.3.1"
+  },
+  "devDependencies": {
+    "@types/node": "^22.10.0",
+    "@types/react": "^18.3.12",
+    "typescript": "^5.7.2"
+  }
+}

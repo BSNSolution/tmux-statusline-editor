@@ -1,0 +1,28 @@
+name: 💡 Feature request
+description: Suggest an idea — a new catalog item, a widget, or an improvement
+labels: ["enhancement"]
+body:
+  - type: textarea
+    id: problem
+    attributes:
+      label: What would you like?
+      description: Describe the feature or the catalog item you'd like, and why it's useful.
+    validations:
+      required: true
+  - type: dropdown
+    id: kind
+    attributes:
+      label: Kind
+      options:
+        - New catalog item (widget / icon / combo)
+        - New language (i18n)
+        - Editor UX
+        - Themes
+        - Other
+    validations:
+      required: true
+  - type: textarea
+    id: extra
+    attributes:
+      label: Anything else?
+      description: Mockups, examples, links to similar features.

@@ -1,7 +1,15 @@
 {
   "name": "@tse/shared",
-  "version": "0.1.0",
   "private": true,
+  "version": "0.1.0",
+  "description": "Pure, tested core for tmux-statusline-editor: model, parser, generator, catalog, and i18n.",
+  "license": "MIT",
+  "author": "BSN Solution (https://bsnsolution.com.br)",
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/BSNSolution/tmux-statusline-editor.git",
+    "directory": "shared"
+  },
   "type": "module",
   "main": "dist/index.js",
   "types": "dist/index.d.ts",

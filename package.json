@@ -2,7 +2,29 @@
   "name": "tmux-statusline-editor",
   "private": true,
   "version": "0.1.0",
-  "description": "Editor visual da statusline do tmux no terminal (TUI) — catálogo de itens, cores, preview fiel, histórico e indicador de agentes de IA. Um tweakcc para o tmux.",
+  "description": "A visual editor for the tmux status line in your terminal (TUI) — item catalog, colors, faithful preview, version history, and an AI agent indicator. A tweakcc for tmux.",
+  "license": "MIT",
+  "author": "BSN Solution (https://bsnsolution.com.br)",
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/BSNSolution/tmux-statusline-editor.git"
+  },
+  "homepage": "https://github.com/BSNSolution/tmux-statusline-editor#readme",
+  "bugs": {
+    "url": "https://github.com/BSNSolution/tmux-statusline-editor/issues"
+  },
+  "keywords": [
+    "tmux",
+    "statusline",
+    "status-line",
+    "tui",
+    "terminal",
+    "editor",
+    "powerline",
+    "nerd-font",
+    "claude-code",
+    "developer-tools"
+  ],
   "scripts": {
     "dev": "pnpm --parallel -r dev",
     "build": "pnpm -r build",

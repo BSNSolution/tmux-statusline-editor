@@ -1,7 +1,15 @@
 {
   "name": "@tse/cli",
-  "version": "0.1.0",
   "private": true,
+  "version": "0.1.0",
+  "description": "TUI (Ink/React) for tmux-statusline-editor: the editor, tmux I/O, history, and the agent-tabs indicator.",
+  "license": "MIT",
+  "author": "BSN Solution (https://bsnsolution.com.br)",
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/BSNSolution/tmux-statusline-editor.git",
+    "directory": "cli"
+  },
   "type": "module",
   "bin": {
     "tmux-statusline": "dist/main.js"

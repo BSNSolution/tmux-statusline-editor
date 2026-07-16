@@ -22,9 +22,9 @@ live preview, and apply instantly. No more memorizing `#{...}` or `#[fg=...]`.
 ---
 
 ```
- ⚡ BSN Solution     1:BSN ⚙   2:Mac 🔔   3:ATM   4:TRIGO   5:CREA          host · 14:35:07
- └────────────────┘ └── tabs, live agent status ──┘                      └── real values ──┘
-        ▲ status-left                                                          ▲ status-right
+ ⚡ my-session      1:api ⚙   2:web 🔔   3:db   4:logs   5:docs          host · 14:35:07
+ └───────────────┘ └── tabs, live agent status ──┘                     └── real values ──┘
+        ▲ status-left                                                        ▲ status-right
 ```
 
 The whole bar above is built and colored inside the TUI — including the powerline borders and the

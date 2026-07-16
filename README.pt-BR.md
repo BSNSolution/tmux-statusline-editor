@@ -106,16 +106,22 @@ Requer o plugin [`tmux-agent-indicator`](https://github.com/accessd/tmux-agent-i
 (o `doctor` instala). Depois:
 
 ```bash
-node cli/dist/main.js agent-tabs   # sobe o daemon
+node cli/dist/main.js agent-tabs --install-hooks   # (recomendado) estado preciso via hooks do Claude Code
+node cli/dist/main.js agent-tabs                    # sobe o daemon
 ```
 
 E no seu `window-status-format` (dá pra fazer pelo editor), inclua `#{@agent_icon}` onde quiser
-o ícone. O daemon:
+o ícone. O daemon varre **todos os painéis** de cada janela, mostra ⚙ (trabalhando) / 🔔 (precisa
+de você), **some ao focar o painel** e **não deixa espaço** quando ocioso.
 
-- varre **todos os painéis** de cada janela (não só o ativo);
-- mostra ⚙ (trabalhando) ou 🔔 (precisa de você); **running vence needs**;
-- **some ao focar o painel** (você já viu o alerta) e **expira sozinho** (anti-"ícone preso");
-- some **sem deixar espaço** quando não há agente.
+**Como o estado é detectado (do mais preciso ao fallback):**
+
+1. **Hooks do Claude Code** — `--install-hooks` adiciona hooks para o próprio Claude reportar o
+   estado exato por painel (`UserPromptSubmit`/`PreToolUse` → trabalhando, `Stop` → ocioso,
+   `Notification` → precisa). Instantâneo e exato; fonte primária. Reversível: `--uninstall-hooks`.
+2. **Fallback por CPU** — para painéis sem hooks, um limiar de CPU separa o agente trabalhando
+   (11–67%) do ocioso (0–3%), com histerese curta pra não piscar.
+3. **environment do tmux-agent-indicator** como último recurso para `needs`.
 
 ## Como funciona
 

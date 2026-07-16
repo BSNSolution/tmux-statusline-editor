@@ -109,12 +109,21 @@ If you run [Claude Code](https://claude.com/claude-code) across tmux panes, this
 tab** whether the agent is working or waiting — including background tabs.
 
 ```bash
-node cli/dist/main.js agent-tabs   # start the daemon (needs tmux-agent-indicator)
+node cli/dist/main.js agent-tabs --install-hooks   # (recommended) precise state via Claude Code hooks
+node cli/dist/main.js agent-tabs                    # start the daemon
 ```
 
 Then add `#{@agent_icon}` to your `window-status-format` (you can do it from the editor). The
-daemon scans **all panes** of each window, shows ⚙/🔔 (running beats needs), **clears when you
-focus the pane**, **expires on its own** (no stuck icons), and leaves **no gap** when idle.
+daemon scans **all panes** of each window, shows ⚙ (working) / 🔔 (needs you), **clears when you
+focus the pane**, and leaves **no gap** when idle.
+
+**How the state is detected (most precise first):**
+1. **Claude Code hooks** — `--install-hooks` adds hooks so Claude itself reports the exact state per
+   pane (`UserPromptSubmit`/`PreToolUse` → working, `Stop` → idle, `Notification` → needs). Instant
+   and exact; the daemon reads it as the primary source. Reversible with `--uninstall-hooks`.
+2. **CPU fallback** — for panes without hooks, a CPU threshold cleanly separates a working agent
+   (11–67%) from an idle one (0–3%), with short hysteresis so the icon doesn't flicker.
+3. **tmux-agent-indicator** environment as a last resort for `needs`.
 
 ## 🏗️ How it works
 
